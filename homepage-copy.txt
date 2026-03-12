@@ -1,0 +1,122 @@
+PAGE HOME
+Home Page  ( / )
+
+
+HERO SECTION
+✦  VISUAL DIRECTION — HERO
+Full-width background: high-quality image of a tech professional working at multiple screens, or an African city skyline (Lagos/Accra) with a digital overlay. Navy overlay at 40% opacity over the image.
+Text sits on the left side (60% width). Right side shows the image. On mobile: stacked, image behind text.
+
+
+Eyebrow Label (small text above headline)
+AI Engineering  |  Cybersecurity  |  Software  |  Machine Learning  |  AI Governance & Safety
+
+Headline (H1)
+Build Smarter Systems. Defend Them. Scale Anywhere.
+
+Sub-headline
+Veenode Technologies is a global professional services firm specialising in AI engineering, cybersecurity, software, machine learning, and AI governance. We help ambitious organisations build, secure, and responsibly govern the technology that powers their next stage of growth.
+
+Hero CTAs (two buttons side by side)
+Button 1 (primary): "Explore Our Services"  → links to /services  |  Gold background, navy text
+Button 2 (secondary): "Talk to Us"  → links to /contact  |  White outline, white text
+
+Trust Bar (below hero, grey background strip)
+A horizontal row of icons or text showing:
+Trusted by organisations across Nigeria, Ghana, the UK, and beyond
+AWS Partner | Google Cloud Ready | ISO-aligned Methodology
+6+ Years of Technical Expertise | 5 Core Service Lines
+📝  DEVELOPER NOTE
+Use icon + label format for the trust bar. Icons can be cloud provider logos (with permission) or simple custom icons. If partner logos are not yet confirmed, use the text-only version.
+
+
+WHAT WE DO — SERVICE OVERVIEW SECTION
+Section Headline
+Five Disciplines. One Integrated Partner.
+Section Sub-headline
+We go deeper than most. Whether you need to deploy an AI system, harden your infrastructure, govern your AI responsibly, build a product from scratch, or operationalise your machine learning models — Veenode brings the depth to do it right.
+
+Service Cards (4 cards in a 2x2 or 1x4 grid)
+Each card contains: icon, title, 2-line description, and a 'Learn More' link.
+
+CARD
+CONTENT
+AI Engineering(Icon: circuit / brain)
+Title: AI EngineeringTagline: From architecture to deployment.Body: We design, build, and integrate AI systems that actually work in production — LLM applications, agentic workflows, AI transformation, and custom AI product development.Link: → Learn More (/services/ai-engineering)
+Cybersecurity(Icon: shield / lock)
+Title: CybersecurityTagline: Threats are real. So are we.Body: VAPT, infrastructure hardening, threat modelling, incident response, and NDPA compliance consulting. We find and fix vulnerabilities before attackers do.Link: → Learn More (/services/cybersecurity)
+Software Engineering(Icon: code brackets)
+Title: Software EngineeringTagline: Built to last, built to scale.Body: Full-stack development, cloud architecture, APIs, and systems engineering. We build software that performs under real-world conditions.Link: → Learn More (/services/software-engineering)
+ML Engineering(Icon: data nodes)
+Title: Machine Learning EngineeringTagline: Models that go beyond the notebook.Body: From data pipelines to MLOps and custom model development, we build machine learning infrastructure that delivers measurable business value.Link: → Learn More (/services/ml-engineering)
+
+
+WHY VEENODE — DIFFERENTIATORS SECTION
+Section Headline
+The Partner That Builds and Protects.
+Section Body
+Most firms do one of these things. We do all of them, and we do them from the same team. Our practitioners span AI engineering, cybersecurity, ML, software, and AI governance. For clients who are serious about building technology that is production-ready, defensible, and responsibly governed, that combination is rare — and it matters.
+
+Three Key Differentiators (icon + title + 2-sentence description each)
+DIFFERENTIATOR
+COPY
+1. AI, Security, and Governance Combined
+You do not need three firms. Veenode's team spans AI engineering, cybersecurity, and AI governance — so your system gets built, hardened, and governed from the same partner.
+2. Senior-Led Delivery
+No junior teams running your engagement while seniors pitch. At Veenode, the people you meet are the people who do the work.
+3. Global Standard, African Roots
+We operate to international standards and serve clients worldwide, with deep knowledge of African markets, regulatory environments, and local technical contexts.
+
+
+GLOBAL REACH SECTION
+Section Headline
+Built in West Africa. Ready for the World.
+Section Body
+Veenode is headquartered in West Africa with a global delivery capability. We serve clients across Nigeria and Ghana, as well as organisations in the UK, the US, the Middle East, and across Africa. Our remote-first delivery model means you get Veenode-quality work wherever you are.
+✦  VISUAL DIRECTION — MAP
+Include a world map graphic with pinpoints on: Lagos (Nigeria), Accra (Ghana), London (UK), and New York (US) as highlighted regions. Style the map in navy with gold pin dots. Keep it minimal and clean.
+
+
+INDUSTRIES SECTION
+Section Headline
+Industries We Serve
+Industry Tiles (icons + labels in a grid — 6 tiles)
+Financial Services & Fintech
+Telecommunications
+Healthcare & Life Sciences
+Government & Public Sector
+Energy & Utilities
+International Organisations & NGOs
+
+SOCIAL PROOF / NUMBERS SECTION
+Section Headline
+The Work Speaks for Itself.
+Stats Row (3–4 numbers in a horizontal strip)
+STAT
+DISPLAY TEXT
+6+
+Years of combined technical expertise
+5
+Core service disciplines under one roof
+Global
+Clients across Nigeria, Ghana, UK, US & beyond
+100%
+Senior-led delivery on every engagement
+📝  DEVELOPER NOTE
+Update the stats as actual client numbers, projects completed, and specific geographies are confirmed. For launch, these framing stats are appropriate and accurate.
+
+
+INSIGHTS PREVIEW SECTION
+Section Headline
+Thinking From the Front Lines
+Section Body
+Our team publishes technical perspectives on AI, cybersecurity, and software engineering. No filler — just insight from practitioners who do the work every day.
+CTA: "Read Our Insights"  → /insights  |  Gold text link with arrow
+Developer note: Show 3 latest blog posts as preview cards. If no posts exist at launch, use placeholder cards with 'Coming Soon' or hide this section until Month 2.
+
+HOME PAGE CTA SECTION (BOTTOM BANNER)
+Headline
+Ready to Build Something That Lasts?
+Body
+Whether you have a specific project in mind or just want to explore what Veenode can do for your organisation, we would love to hear from you.
+CTA Button: "Get in Touch"  → /contact  |  Gold background, navy text, full-width banner with navy background
