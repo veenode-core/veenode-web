@@ -8,6 +8,7 @@ import IndustriesSection from "../components/home/industries-section";
 import StatsSection from "../components/home/stats-section";
 import InsightsSection from "../components/home/insights-section";
 import CTASection from "../components/home/cta-section";
+import VeenodeWordmark from "../components/veenode-wordmark";
 
 export default function Home() {
   return (
@@ -16,7 +17,7 @@ export default function Home() {
       <HeroSection />
 
       {/* Veenode Large Text Section */}
-      <section className="max-w-7xl mx-auto px-6 py-16 md:py-24">
+      {/* <section className="max-w-7xl mx-auto px-6 py-16 md:py-24">
         <div className="w-full flex justify-center">
           <h2
             className="font-bold text-primary leading-none tracking-tight text-center"
@@ -27,7 +28,8 @@ export default function Home() {
             VEENODE
           </h2>
         </div>
-      </section>
+      </section> */}
+      <VeenodeWordmark mode="outline-fill" />
 
       <TrustBar />
       <ServicesSection />
