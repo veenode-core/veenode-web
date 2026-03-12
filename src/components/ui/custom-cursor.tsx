@@ -39,14 +39,14 @@ export default function CustomCursor() {
       {/* Center dot — trails slightly behind native cursor */}
       <div
         ref={dotRef}
-        className="fixed top-0 left-0 w-2.5 h-2.5 bg-primary rounded-full pointer-events-none z-[9999]"
+        className="fixed top-0 left-0 w-2.5 h-2.5 bg-primary rounded-full pointer-events-none z-9999"
         style={{ transform: "translate(-50%, -50%)" }}
       />
 
       {/* Outer ring — larger, slower, more fluid */}
       <div
         ref={borderRef}
-        className="fixed top-0 left-0 w-16 h-16 border-2 border-primary rounded-full pointer-events-none z-[9999] opacity-60"
+        className="fixed top-0 left-0 w-16 h-16 border-2 border-primary rounded-full pointer-events-none z-9999 opacity-60"
         style={{ transform: "translate(-50%, -50%)" }}
       />
     </>

@@ -16,25 +16,26 @@ export default function BottomBlur({
       className={`fixed bottom-0 left-0 right-0 z-50 pointer-events-none ${className}`}
       style={{
         height: "220px",
-        // This is the magic part
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
+        // 1. Apply the blur to the container itself
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        // 2. Use a mask to fade the blur effect out at the top
         WebkitMaskImage:
           "linear-gradient(to bottom, transparent 0%, black 100%)",
         maskImage: "linear-gradient(to bottom, transparent 0%, black 100%)",
       }}
     >
-      {/* Optional: Keep your white tint overlay if you want that milky look */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(to bottom, transparent, rgba(255,255,255,0.4))",
-        }}
-      />
-
       <div className="absolute bottom-0 left-0 right-0 pointer-events-auto">
-        {/* ... rest of your content ... */}
+        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between gap-4">
+          {left && (
+            <span className="text-[#0f1f45] font-semibold text-base truncate">
+              {left}
+            </span>
+          )}
+          {right && (
+            <div className="flex items-center gap-4 shrink-0">{right}</div>
+          )}
+        </div>
       </div>
     </div>
   );
