@@ -47,7 +47,7 @@ export default function Home() {
             </p>
 
             {/* Mobile: Typed animation */}
-            <div className="md:hidden text-gray-400 text-[10px] uppercase tracking-[0.15em] font-inter font-bold mb-10 h-6">
+            <div className="md:hidden text-primary text-[10px] uppercase tracking-[0.15em] font-inter font-bold mb-6 h-6">
               <ReactTyped
                 strings={[
                   "AI Engineering",
@@ -56,8 +56,9 @@ export default function Home() {
                   "Machine Learning",
                   "AI Governance & Safety",
                 ]}
-                typeSpeed={50}
-                backSpeed={30}
+                typeSpeed={80}
+                backSpeed={80}
+                backDelay={2000}
                 loop
               />
             </div>
@@ -133,9 +134,16 @@ export default function Home() {
 
       {/* Veenode Large Text Section */}
       <section className="max-w-7xl mx-auto px-6 py-16 md:py-24">
-        <h2 className="text-[15vw] md:text-[12vw] font-bold text-primary leading-none tracking-tight">
-          VEENODE
-        </h2>
+        <div className="w-full flex justify-center">
+          <h2 
+            className="font-bold text-primary leading-none tracking-tight text-center"
+            style={{
+              fontSize: 'clamp(4rem, 20vw, 20rem)',
+            }}
+          >
+            VEENODE
+          </h2>
+        </div>
       </section>
     </div>
   );
