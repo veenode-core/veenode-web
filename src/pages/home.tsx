@@ -232,30 +232,28 @@ export default function Home() {
       </section>
 
       {/* Trust Bar */}
-      <section className="bg-[#f5f7fb] py-10">
+      <section className="bg-primary py-10">
         <div className="max-w-7xl mx-auto px-6">
-          <p className="text-center text-xs font-medium tracking-[0.06em] uppercase text-[#0f1f45]/40 mb-8">
+          <p className="text-center text-xs font-medium tracking-[0.06em] uppercase text-white/60 mb-8">
             Trusted by organisations across Nigeria, Ghana, the UK, and beyond
           </p>
-
-          {/* Grid divided by 1px hairline separators */}
           <div
             className="grid grid-cols-2 md:grid-cols-5 rounded-xl overflow-hidden"
-            style={{ gap: "1px", background: "rgba(15,31,69,0.08)" }}
+            style={{ gap: "1px", background: "rgba(255,255,255,0.1)" }}
           >
             {credentials.map(({ icon: Icon, label, sub }) => (
               <div
                 key={label}
-                className="bg-[#f5f7fb] flex flex-col items-center justify-center gap-3 px-4 py-6 text-center"
+                className="bg-primary flex flex-col items-center justify-center gap-3 px-4 py-6 text-center"
               >
-                <div className="w-9 h-9 rounded-lg bg-[#0f1f45]/[0.06] flex items-center justify-center flex-shrink-0">
-                  <Icon size={18} weight="regular" color="#0f1f45" />
+                <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
+                  <Icon size={18} weight="regular" className="text-white" />
                 </div>
                 <div>
-                  <p className="text-[0.8125rem] font-semibold text-[#0f1f45] leading-snug">
+                  <p className="text-[0.8125rem] font-semibold text-white leading-snug">
                     {label}
                   </p>
-                  <p className="text-[0.75rem] text-[#0f1f45]/40 mt-0.5">
+                  <p className="text-[0.75rem] text-white/60 mt-0.5">
                     {sub}
                   </p>
                 </div>
@@ -292,10 +290,10 @@ export default function Home() {
             >
               {/* Icon + tagline row */}
               <div className="flex items-start justify-between gap-4">
-                <div className="w-11 h-11 rounded-xl bg-[#0f1f45]/[0.06] flex items-center justify-center flex-shrink-0">
+                <div className="w-11 h-11 rounded-xl bg-[#0f1f45]/6 flex items-center justify-center flex-shrink-0">
                   <Icon size={20} weight="regular" className="text-primary" />
                 </div>
-                <span className="text-xs font-semibold tracking-wide text-gold uppercase mt-1 text-right leading-snug">
+                <span className="text-xs font-semibold tracking-wide text-gray-700 uppercase mt-1 text-right leading-snug">
                   {tagline}
                 </span>
               </div>
@@ -309,14 +307,15 @@ export default function Home() {
               </p>
 
               {/* Learn more */}
-              <div className="flex items-center gap-1.5 text-sm font-semibold text-primary group-hover:text-gold transition-colors duration-200 mt-auto">
+              <Button 
+                to={href} 
+                variant="ghost" 
+                size="sm"
+                icon={<ArrowRight size={14} weight="bold" />}
+                className="self-start mt-auto"
+              >
                 Learn more
-                <ArrowRight
-                  size={14}
-                  weight="bold"
-                  className="transition-transform duration-200 group-hover:translate-x-0.5"
-                />
-              </div>
+              </Button>
             </a>
           ))}
         </div>
