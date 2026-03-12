@@ -1,28 +1,121 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 
+interface LoadingStates {
+  dom: boolean;
+  images: boolean;
+  fonts: boolean;
+  minTime: boolean;
+}
+
 export default function Preloader({ onComplete }: { onComplete?: () => void }) {
   const [percent, setPercent] = useState(0);
+  const [loadingStates, setLoadingStates] = useState<LoadingStates>({
+    dom: false,
+    images: false,
+    fonts: false,
+    minTime: false,
+  });
+  
   const overlayRef = useRef<HTMLDivElement>(null);
   const percentRef = useRef<HTMLDivElement>(null);
   const progressFillRef = useRef<HTMLDivElement>(null);
   const progressTrackRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const hasExited = useRef(false);
+  const animationRef = useRef<gsap.core.Tween | null>(null);
 
+  // Monitor actual page loading
   useEffect(() => {
-    const obj = { value: 0 };
+    const MAX_LOAD_TIME = 5000;
+    const MIN_DISPLAY_TIME = 1000;
 
-    const tl = gsap.timeline({
-      onComplete: () => {
-        if (!hasExited.current) exit();
-      },
-    });
+    // Force complete after max time (edge case: slow connection)
+    const maxTimeout = setTimeout(() => {
+      setLoadingStates({
+        dom: true,
+        images: true,
+        fonts: true,
+        minTime: true,
+      });
+    }, MAX_LOAD_TIME);
 
-    tl.to(obj, {
-      value: 100,
-      duration: 2.4,
-      ease: "power2.inOut",
+    // Minimum display time
+    const minTimeout = setTimeout(() => {
+      setLoadingStates((prev) => ({ ...prev, minTime: true }));
+    }, MIN_DISPLAY_TIME);
+
+    // 1. Check DOM ready state
+    const checkDOMReady = () => {
+      if (document.readyState === "complete") {
+        setLoadingStates((prev) => ({ ...prev, dom: true }));
+      } else {
+        window.addEventListener("load", () => {
+          setLoadingStates((prev) => ({ ...prev, dom: true }));
+        });
+      }
+    };
+
+    // 2. Track all images
+    const trackImages = () => {
+      const images = Array.from(document.querySelectorAll("img"));
+      
+      if (images.length === 0) {
+        setLoadingStates((prev) => ({ ...prev, images: true }));
+        return;
+      }
+
+      const imagePromises = images.map((img) => {
+        if (img.complete) return Promise.resolve();
+        return new Promise<void>((resolve) => {
+          img.onload = () => resolve();
+          img.onerror = () => resolve(); // Don't block on errors
+        });
+      });
+
+      Promise.all(imagePromises)
+        .then(() => setLoadingStates((prev) => ({ ...prev, images: true })))
+        .catch(() => setLoadingStates((prev) => ({ ...prev, images: true })));
+    };
+
+    // 3. Track fonts
+    const trackFonts = () => {
+      if ("fonts" in document) {
+        document.fonts.ready
+          .then(() => setLoadingStates((prev) => ({ ...prev, fonts: true })))
+          .catch(() => setLoadingStates((prev) => ({ ...prev, fonts: true })));
+      } else {
+        // Fallback if fonts API not supported
+        setLoadingStates((prev) => ({ ...prev, fonts: true }));
+      }
+    };
+
+    checkDOMReady();
+    trackImages();
+    trackFonts();
+
+    return () => {
+      clearTimeout(maxTimeout);
+      clearTimeout(minTimeout);
+    };
+  }, []);
+
+  // Update progress based on loading states
+  useEffect(() => {
+    const completedStates = Object.values(loadingStates).filter(Boolean).length;
+    const totalStates = Object.keys(loadingStates).length;
+    const targetPercent = Math.round((completedStates / totalStates) * 100);
+
+    // Animate to target percent
+    if (animationRef.current) {
+      animationRef.current.kill();
+    }
+
+    const obj = { value: percent };
+    animationRef.current = gsap.to(obj, {
+      value: targetPercent,
+      duration: 0.5,
+      ease: "power2.out",
       onUpdate: () => {
         const v = Math.round(obj.value);
         setPercent(v);
@@ -32,10 +125,14 @@ export default function Preloader({ onComplete }: { onComplete?: () => void }) {
       },
     });
 
-    return () => {
-      tl.kill();
-    };
-  }, []);
+    // Check if all states are complete
+    if (completedStates === totalStates && !hasExited.current) {
+      // Small delay before exit for smooth UX
+      setTimeout(() => {
+        if (!hasExited.current) exit();
+      }, 300);
+    }
+  }, [loadingStates]);
 
   const exit = () => {
     if (hasExited.current) return;
@@ -189,7 +286,7 @@ export default function Preloader({ onComplete }: { onComplete?: () => void }) {
             style={{
               width: "0%",
               background: "rgba(255,255,255,0.7)",
-              transition: "width 0.05s linear",
+              transition: "width 0.3s ease-out",
             }}
           />
         </div>

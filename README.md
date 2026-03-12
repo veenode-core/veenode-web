@@ -1,73 +1,73 @@
-# React + TypeScript + Vite
+# Veenode Technologies Website
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Official website for Veenode Technologies - a global professional services firm specializing in AI engineering, cybersecurity, software development, machine learning, and AI governance.
 
-Currently, two official plugins are available:
+## About Veenode
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Veenode Technologies helps ambitious organizations build, secure, and responsibly govern the technology that powers their next stage of growth. With expertise spanning five core disciplines, we deliver senior-led, production-ready solutions to clients across Nigeria, Ghana, the UK, the US, and beyond.
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+- **Framework:** React 19 + TypeScript
+- **Build Tool:** Vite
+- **Styling:** Tailwind CSS v4
+- **Routing:** React Router v7
+- **Animations:** GSAP with ScrollTrigger
+- **Icons:** Phosphor Icons
+- **Package Manager:** Bun
 
-## Expanding the ESLint configuration
+## Key Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- 🎨 Custom design system with Poppins (headers) and Manrope (body) fonts
+- 🎭 Resource-based preloader with edge case handling
+- ✨ GSAP-powered text split reveal animations
+- 🖱️ Custom cursor with independent dot and ring tracking
+- 📱 Fully responsive mobile-first design
+- 🎯 Modular component architecture
+- 🚀 Optimized performance with code splitting
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Color Palette
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **Primary Navy Blue:** `#1A3C6E` - Backgrounds, headers, buttons
+- **Brand Gold:** `#F0A500` - CTAs, accents, highlights
+- **Light Blue Tint:** `#EAF0FA` - Section backgrounds
+- **Dark Text:** `#1A1A1A` - Body copy
+- **Muted Text:** `#555555` - Secondary text
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Project Structure
+
+```
+src/
+├── components/
+│   ├── home/          # Home page sections
+│   ├── ui/            # Reusable UI components
+│   ├── navbar.tsx
+│   └── preloader.tsx
+├── data/              # Static data and content
+├── pages/             # Route pages
+└── assets/            # Images and static files
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Development
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+# Install dependencies
+bun install
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Start dev server
+bun run dev
+
+# Build for production
+bun run build
+
+# Preview production build
+bun run preview
 ```
+
+## Deployment
+
+Configured for Vercel with SPA routing via `vercel.json`. The preloader only shows on initial page load/refresh, not on client-side navigation.
+
+## License
+
+Proprietary - © 2024 Veenode Technologies. All rights reserved.
