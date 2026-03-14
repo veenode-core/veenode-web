@@ -3,7 +3,9 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css';
 import Home from './pages/home';
+import NotFound from './pages/404';
 import CustomCursor from './components/ui/custom-cursor';
+import { ScrollToTop } from './components/scroll-to-top';
 import BottomBlur from './components/ui/bottom-blur';
 import Preloader from './components/preloader';
 
@@ -26,8 +28,10 @@ function App() {
       <BrowserRouter>
         <CustomCursor />
         <BottomBlur />
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </>

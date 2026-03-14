@@ -6,9 +6,9 @@ import Button from "./ui/button";
 const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
+  { label: "Services", href: "/services" },
   { label: "Blog", href: "/blog" },
-  { label: "News", href: "/news" },
-  { label: "Gallery", href: "/gallery" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export default function Navbar() {
