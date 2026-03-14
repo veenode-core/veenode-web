@@ -29,10 +29,10 @@ export default function ServicesSection() {
             className="group bg-white p-8 md:p-10 flex flex-col gap-5 hover:bg-[#f5f7fb] transition-colors duration-200"
           >
             <div className="flex items-start justify-between gap-4">
-              <div className="w-11 h-11 rounded-xl bg-[#0f1f45]/[0.06] flex items-center justify-center flex-shrink-0">
+              <div className="w-11 h-11 rounded-xl bg-[#0f1f45]/6 flex items-center justify-center shrink-0">
                 <Icon size={20} weight="regular" className="text-primary" />
               </div>
-              <span className="text-xs font-semibold tracking-wide text-gold uppercase mt-1 text-right leading-snug">
+              <span className="text-xs font-semibold tracking-wide text-gray-700 uppercase mt-1 text-right leading-snug">
                 {tagline}
               </span>
             </div>

@@ -13,6 +13,16 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     if (menuOpen) {
@@ -27,14 +37,22 @@ export default function Navbar() {
 
   return (
     <nav
-      className="sticky top-0 z-50 bg-white/65 backdrop-blur-md border-b border-gray-200"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${
+        scrolled
+          ? "bg-white/80 backdrop-blur-lg border-gray-200/50"
+          : "bg-white border-gray-200"
+      }`}
       id="main-navbar"
     >
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between py-4">
+      <div
+        className={`max-w-7xl mx-auto px-6 flex items-center justify-between transition-all duration-300 ${
+          scrolled ? "py-3" : "py-4"
+        }`}
+      >
         <Link to="/" className="flex items-center gap-2" id="navbar-logo">
-          <img 
-            src="/src/assets/veenode-logo.png" 
-            alt="Veenode Technologies" 
+          <img
+            src="/src/assets/veenode-logo.png"
+            alt="Veenode Technologies"
             className="h-10"
           />
         </Link>
