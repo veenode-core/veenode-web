@@ -9,8 +9,8 @@ import iconImage from "../../assets/icon.png";
 
 export default function HeroSection() {
   return (
-    <section className="max-w-7xl mx-auto px-6 pt-16 md:pt-28 pb-20">
-      <div className="flex flex-col md:grid md:grid-cols-[1fr_4fr] gap-8 md:gap-12">
+    <section className="max-w-7xl mx-auto px-6 pt-24 md:pt-28 pb-20">
+      <div className="flex flex-col md:grid md:grid-cols-[1fr_4fr] gap-4 md:gap-12">
         <div className="hidden md:flex justify-start pt-2">
           <div className="relative w-32 h-32 animate-[spin_15s_linear_infinite]">
             <svg
