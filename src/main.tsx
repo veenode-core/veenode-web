@@ -12,8 +12,8 @@ function App() {
 
   useEffect(() => {
     // Check if this is a page reload/refresh (not navigation)
-    const isReload = performance.navigation.type === 1 || 
-                     performance.getEntriesByType('navigation')[0]?.type === 'reload';
+    const navEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+    const isReload = navEntry?.type === 'reload';
     
     if (!isReload) {
       setShowPreloader(false);
