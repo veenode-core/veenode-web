@@ -181,7 +181,7 @@ export default function GlobalReachSection() {
         <div className="relative z-20 flex items-center justify-center gap-8 pb-8 -mt-4">
           <div className="flex items-center gap-2">
             <span
-              className="w-2.5 h-2.5 rounded-full bg-gold flex-shrink-0"
+              className="w-2.5 h-2.5 rounded-full bg-gold shrink-0"
               style={{ boxShadow: "0 0 6px rgba(240,165,0,0.6)" }}
             />
             <span
@@ -193,7 +193,7 @@ export default function GlobalReachSection() {
           </div>
           <div className="w-px h-3 bg-white/15" />
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-gold/60 flex-shrink-0" />
+            <span className="w-2 h-2 rounded-full bg-gold/60 shrink-0" />
             <span
               className="text-white/50 font-semibold tracking-widest uppercase"
               style={{ fontSize: "0.6rem" }}

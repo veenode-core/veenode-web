@@ -1,4 +1,5 @@
 import { ArrowUpRight } from "@phosphor-icons/react";
+import veenodeWhite from "../assets/veenode-white.png";
 
 const nav = [
   {
@@ -55,9 +56,7 @@ export default function Footer() {
           style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
         >
           <div className="max-w-md">
-            <p
-              className="text-xs text-primary-light font-semibold tracking-widest uppercase mb-4"
-            >
+            <p className="text-xs text-primary-light font-semibold tracking-widest uppercase mb-4">
               Veenode Technologies
             </p>
             <h2
@@ -98,22 +97,10 @@ export default function Footer() {
           className="grid grid-cols-2 md:grid-cols-4 gap-10 py-14"
           style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
         >
-          {/* Brand column */}
           <div className="col-span-2 md:col-span-1 flex flex-col gap-4">
-            <div className="flex items-center gap-2">
-              {/* Logo mark */}
-              <div
-                className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0"
-                style={{ background: "rgba(255,255,255,0.1)" }}
-              >
-                <span className="text-white font-black text-xs">VN</span>
-              </div>
-              <span className="text-white font-bold text-sm tracking-tight">
-                Veenode
-              </span>
-            </div>
+            <img src={veenodeWhite} alt="Veenode" className="w-32" />
             <p
-              className="text-xs leading-relaxed max-w-[200px]"
+              className="text-xs leading-relaxed max-w-50"
               style={{ color: "rgba(255,255,255,0.35)" }}
             >
               A global professional services firm specialising in AI,

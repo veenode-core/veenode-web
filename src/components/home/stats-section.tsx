@@ -1,9 +1,6 @@
-"use client";
-
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import TextSplitReveal from "../ui/text-split-reveal";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -71,7 +68,7 @@ export default function StatsSection() {
         {stats.map(({ value, label, index }, i) => (
           <div
             key={index}
-            className="relative flex-shrink-0 flex flex-col justify-between overflow-hidden"
+            className="relative shrink-0 flex flex-col justify-between overflow-hidden"
             style={{
               width: "100vw",
               height: "100vh",

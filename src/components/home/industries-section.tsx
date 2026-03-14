@@ -54,7 +54,7 @@ export default function IndustriesSection() {
                 key={idx}
                 className="group bg-light-grey hover:bg-white transition-colors duration-200 flex items-center gap-4 px-6 py-5"
               >
-                <div className="w-9 h-9 rounded-lg bg-[#0f1f45]/6 group-hover:bg-primary group-hover:text-white flex items-center justify-center flex-shrink-0 transition-colors duration-200">
+                <div className="w-9 h-9 rounded-lg bg-[#0f1f45]/6 group-hover:bg-primary group-hover:text-white flex items-center justify-center shrink-0 transition-colors duration-200">
                   <Icon
                     size={17}
                     weight="regular"
