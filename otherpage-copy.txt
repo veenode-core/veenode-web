@@ -1,0 +1,154 @@
+PAGE ABOUT
+About Us Page  ( /about )
+
+
+HERO SECTION
+Headline
+We Are Veenode Technologies.
+Sub-headline
+A professional services firm built for the era of AI — combining engineering depth, security expertise, and genuine global ambition.
+✦  VISUAL DIRECTION
+Split layout: text on left, a high-quality team photo or abstract tech imagery on right. If no team photo is available at launch, use an abstract illustration of connected nodes in navy and gold.
+
+
+OUR STORY SECTION
+Section Headline
+Built From Experience. Relaunched With Purpose.
+Body Copy
+Veenode Technologies was founded on a simple belief: that organisations in Africa and around the world deserve access to the highest quality of technical expertise — not as a privilege, but as a standard.
+With roots in West Africa and a team that has delivered technical projects across sectors ranging from financial services to public sector infrastructure, Veenode has built the kind of experience that only comes from doing real work in complex environments.
+Today, we are relaunching with sharper focus, a stronger team, and a clear mandate: to be the partner of choice for any organisation that is serious about building and securing intelligent systems that perform at scale.
+
+OUR MISSION & VALUES
+Mission Statement
+To deliver world-class AI engineering, cybersecurity, software, machine learning, and AI governance services to organisations wherever they are — with the technical depth, local intelligence, and global standards they deserve.
+
+Our Values (4 value cards with icons)
+VALUE
+DESCRIPTION
+Technical Integrity
+We never ship work we would not stake our reputation on. Every line of code, every security recommendation, every model deployed meets the standard we set for ourselves — not just the standard the client asked for.
+Radical Transparency
+We tell clients what we find, even when it is uncomfortable. We tell them what we do not know. We set realistic timelines. Trust is built on honesty, and honesty is non-negotiable at Veenode.
+African Excellence, Global Ambition
+We are proud of where we come from and uncompromising about where we are going. We hold ourselves to global standards while carrying the unique advantage of African market knowledge and context.
+Long-Term Partnership
+We are not project-chasers. We build relationships with clients who want to grow with a partner who invests in understanding their business, not just their brief.
+
+
+TEAM SECTION
+Section Headline
+The People Behind the Work
+Section Sub-headline
+At Veenode, senior practitioners lead every engagement. You will not deal with account managers and then get handed off to junior teams. The experts you speak with are the experts who do the work.
+📝  DEVELOPER NOTE
+Developer: Build a team grid with photo, name, title, and short bio (2 sentences max) per person.
+Card format: Photo → Name → Title → 2-line bio → LinkedIn icon link.
+Use [TEAM MEMBER PHOTO], [TEAM MEMBER NAME], [TITLE], and [BIO] as placeholders until the client provides these details.
+Minimum: Feature the founder and the 5 service line leads (AI Engineering, Cybersecurity, Software Engineering, ML Engineering, AI Governance & Safety). Add additional team members as photos and bios are confirmed.
+
+
+Founder Card Template (fill in actual details)
+FIELD
+CONTENT
+Photo
+[FOUNDER PHOTO — professional headshot]
+Name
+[FOUNDER NAME]
+Title
+Founder & CEO, Veenode Technologies Ltd
+Bio
+[2-sentence bio: background, expertise, vision. E.g.: Victor Akinode is a researcher and technologist with expertise spanning AI engineering, cybersecurity, and machine learning. He founded Veenode to build a firm that could deliver global-standard technical services from Africa.]
+LinkedIn
+[LinkedIn profile URL]
+
+
+ABOUT PAGE CTA
+Headline
+Work With a Team That Takes Your Technology Seriously.
+CTA Button: "Start a Conversation"  → /contact
+
+PAGE SERVICES
+Services Overview Page  ( /services )
+
+
+HERO SECTION
+Headline
+Five Disciplines. One Partner. No Compromise.
+Sub-headline
+Veenode delivers across five interconnected technical disciplines. Whether you need one or all five, we bring the same depth, the same standards, and the same senior-led approach to every engagement.
+
+SERVICES GRID
+Four full-width service feature sections, alternating image left / image right:
+
+Service 1: AI Engineering
+ELEMENT
+COPY
+Headline
+From AI Strategy to Working Systems.
+Body
+Veenode's AI Engineering practice helps organisations move beyond AI experimentation and into production. We design and build LLM-powered applications, agentic AI systems, AI transformation roadmaps, and custom AI products tailored to your industry and workflow. We work across the full AI engineering lifecycle: from architecture and data strategy to integration, deployment, and ongoing optimisation. Our team has experience with the leading model providers, vector databases, orchestration frameworks, and deployment infrastructure — so you do not have to figure it out alone.
+CTA
+"Explore AI Engineering"  → /services/ai-engineering
+
+
+Service 2: Cybersecurity
+ELEMENT
+COPY
+Headline
+Find the Gaps Before the Attackers Do.
+Body
+Cyber threats are growing faster than most organisations can respond. Veenode's cybersecurity practice helps you get ahead of them. We conduct penetration testing and vulnerability assessment (VAPT), design and implement infrastructure hardening programmes, build threat models for complex systems, and provide compliance consulting for frameworks including Nigeria's NDPA, ISO 27001, and SOC 2. We also bring specialist expertise in AI security — assessing the unique risks introduced by AI systems, LLMs, and agentic workflows. If your organisation is building AI, it needs an AI security posture to match.
+CTA
+"Explore Cybersecurity"  → /services/cybersecurity
+
+
+Service 3: Software Engineering
+ELEMENT
+COPY
+Headline
+Software That Performs When It Matters.
+Body
+Veenode builds software that does not just launch — it scales. Our software engineering practice covers full-stack web and mobile development, cloud architecture and infrastructure, API design and integration, and systems engineering for high-availability environments. We work across modern technology stacks and cloud platforms, and we apply engineering discipline — not just coding speed — to every build. Whether you are starting from scratch or inheriting a codebase, we bring the rigour to make it work.
+CTA
+"Explore Software Engineering"  → /services/software-engineering
+
+
+Service 4: ML Engineering
+ELEMENT
+COPY
+Headline
+Machine Learning That Moves Beyond the Prototype.
+Body
+Most machine learning projects fail in the gap between notebook and production. Veenode's ML Engineering practice is built to close that gap. We design and build end-to-end ML pipelines, implement MLOps infrastructure for model deployment and monitoring, develop custom models for classification, prediction, recommendation, and NLP, and help organisations build the data foundations that machine learning requires. We work with clients at every stage — from early-stage data strategy to scaling a mature ML platform.
+CTA
+"Explore ML Engineering"  → /services/ml-engineering
+
+
+Service 5: AI Governance & Safety
+ELEMENT
+COPY
+Headline
+Govern What You Build.
+Body
+AI is not just a technical challenge — it is a governance one. Veenode's AI Governance and Safety practice helps organisations design responsible AI frameworks, conduct model risk assessments, run adversarial safety testing, evaluate AI systems for bias and alignment, and navigate the regulatory landscape including Nigeria's NITDA AI guidelines, the AU Continental AI Strategy, and the EU AI Act. We bring research-grade rigour to practical governance challenges — helping your organisation prove that its AI systems are trustworthy, not just functional.
+CTA
+Explore AI Governance and Safety  -> /services/ai-governance
+
+
+HOW WE WORK SECTION
+Section Headline
+Our Approach to Every Engagement
+STEP
+DESCRIPTION
+1. Discovery
+We start by understanding your business, your technical environment, and the problem you are actually trying to solve — not just the brief you have written.
+2. Scoping
+We produce a clear, transparent scope of work with realistic timelines, defined deliverables, and honest pricing. No surprises.
+3. Delivery
+Senior practitioners lead the work. We keep you informed at every milestone. We flag issues early rather than late.
+4. Handover & Support
+We do not disappear at go-live. We document everything, train your team, and provide post-delivery support to ensure the work performs as designed.
+
+
+CTA: "Talk to Us About Your Project"  → /contact
