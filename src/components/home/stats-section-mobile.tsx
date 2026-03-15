@@ -1,3 +1,5 @@
+import TextSplitReveal from "../ui/text-split-reveal";
+
 const stats = [
   { value: "6+", label: "Years of combined technical expertise", index: "01" },
   { value: "5", label: "Core service disciplines under one roof", index: "02" },
@@ -15,7 +17,15 @@ const stats = [
 
 export default function StatsSectionMobile() {
   return (
-    <div className="flex flex-col">
+    <section className="bg-white py-20">
+      <div className="px-6 mb-12">
+        <TextSplitReveal
+          text="The Work Speaks|for Itself."
+          className="text-3xl font-bold"
+          tag="h2"
+        />
+      </div>
+      <div className="flex flex-col">
       {stats.map(({ value, label, index }, i) => {
         const isDark = i % 2 !== 0;
         const fg = isDark ? "#ffffff" : "#1A3C6E";
@@ -77,5 +87,6 @@ export default function StatsSectionMobile() {
         );
       })}
     </div>
+    </section>
   );
 }

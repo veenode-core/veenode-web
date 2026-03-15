@@ -2,6 +2,8 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+import TextSplitReveal from "../ui/text-split-reveal";
+
 gsap.registerPlugin(ScrollTrigger);
 
 const stats = [
@@ -78,11 +80,19 @@ export default function StatsSection() {
   }, []);
 
   return (
-    <div ref={sectionRef} className="overflow-hidden">
-      <div
-        ref={trackRef}
-        className="flex flex-col md:flex-row will-change-transform"
-      >
+    <section className="bg-white">
+      <div className="max-w-7xl mx-auto px-6 pt-32 pb-16">
+        <TextSplitReveal
+          text="The Work Speaks|for Itself."
+          className="text-5xl font-bold"
+          tag="h2"
+        />
+      </div>
+      <div ref={sectionRef} className="overflow-hidden">
+        <div
+          ref={trackRef}
+          className="flex flex-col md:flex-row will-change-transform"
+        >
         {stats.map(({ value, label, index }, i) => {
           const isDark = i % 2 !== 0;
           const fg = isDark ? "#ffffff" : "#1A3C6E";
@@ -188,6 +198,7 @@ export default function StatsSection() {
           );
         })}
       </div>
-    </div>
+      </div>
+    </section>
   );
 }

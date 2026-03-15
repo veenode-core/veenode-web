@@ -6,18 +6,20 @@ export default function DifferentiatorsSection() {
     <section className="bg-primary-light py-20 md:py-32">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header — left aligned, split layout */}
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-20">
-          <div className="max-w-xl">
-            <TextSplitReveal
-              text="The Partner That Builds|and Protects."
-              mobileText="The Partner|That Builds|and Protects."
-              className="text-3xl md:text-5xl font-bold"
-              tag="h2"
-            />
-          </div>
-          <p className="text-muted text-sm md:text-base max-w-sm md:text-right leading-relaxed">
-            Most firms do one of these things. We do all of them — from the same
-            team, with the same standard of rigour.
+        <div className="max-w-3xl mb-20">
+          <TextSplitReveal
+            text="The Partner That Builds|and Protects."
+            mobileText="The Partner|That Builds|and Protects."
+            className="text-3xl md:text-5xl font-bold mb-6"
+            tag="h2"
+          />
+          <p className="text-muted text-sm md:text-base leading-relaxed">
+            Most firms do one of these things. We do all of them, and we do them
+            from the same team. Our practitioners span AI engineering,
+            cybersecurity, ML, software, and AI governance. For clients who are
+            serious about building technology that is production-ready,
+            defensible, and responsibly governed, that combination is rare — and
+            it matters.
           </p>
         </div>
 

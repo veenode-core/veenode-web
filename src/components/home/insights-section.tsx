@@ -57,14 +57,15 @@ export default function InsightsSection() {
               className="text-sm leading-relaxed max-w-xs md:text-right"
               style={{ color: "rgba(255,255,255,0.45)" }}
             >
-              Technical perspectives from practitioners who do the work every
-              day. No filler.
+                Our team publishes technical perspectives on AI, cybersecurity, and
+                software engineering. No filler — just insight from
+                practitioners who do the work every day.
             </p>
             <a
               href="/insights"
               className="group inline-flex items-center gap-2.5 text-sm font-semibold text-white hover:opacity-70 transition-opacity"
             >
-              Read all insights
+              Read Our Insights
               <span
                 className="flex items-center justify-center w-7 h-7 rounded-full transition-all duration-200 group-hover:translate-x-0.5"
                 style={{ border: "1px solid rgba(255,255,255,0.25)" }}

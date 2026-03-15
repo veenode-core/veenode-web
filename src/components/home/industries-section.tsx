@@ -36,10 +36,7 @@ export default function IndustriesSection() {
               tag="h2"
             />
           </div>
-          <p className="text-muted text-sm max-w-xs md:text-right leading-relaxed">
-            Deep domain knowledge across the sectors that matter most to
-            Africa's growth and the global economy.
-          </p>
+
         </div>
 
         {/* Grid */}

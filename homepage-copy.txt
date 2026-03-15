@@ -1,12 +1,4 @@
-PAGE HOME
-Home Page  ( / )
-
-
 HERO SECTION
-✦  VISUAL DIRECTION — HERO
-Full-width background: high-quality image of a tech professional working at multiple screens, or an African city skyline (Lagos/Accra) with a digital overlay. Navy overlay at 40% opacity over the image.
-Text sits on the left side (60% width). Right side shows the image. On mobile: stacked, image behind text.
-
 
 Eyebrow Label (small text above headline)
 AI Engineering  |  Cybersecurity  |  Software  |  Machine Learning  |  AI Governance & Safety
