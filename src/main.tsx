@@ -6,7 +6,7 @@ import Home from './pages/home';
 import NotFound from './pages/404';
 import CustomCursor from './components/ui/custom-cursor';
 import { ScrollToTop } from './components/scroll-to-top';
-import BottomBlur from './components/ui/bottom-blur';
+// import BottomBlur from './components/ui/bottom-blur';
 import Preloader from './components/preloader';
 
 function App() {
@@ -27,7 +27,7 @@ function App() {
       {showPreloader && <Preloader onComplete={() => setShowPreloader(false)} />}
       <BrowserRouter>
         <CustomCursor />
-        <BottomBlur />
+        {/* <BottomBlur /> */}
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<Home />} />

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { List, X } from "@phosphor-icons/react";
 import Button from "./ui/button";
+import Logo from "../assets/veenode-logo.png";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
@@ -51,7 +52,7 @@ export default function Navbar() {
       >
         <Link to="/" className="flex items-center gap-2" id="navbar-logo">
           <img
-            src="/src/assets/veenode-logo.png"
+            src={Logo}
             alt="Veenode Technologies"
             className="h-10"
           />
