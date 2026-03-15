@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css';
 import Home from './pages/home';
 import About from './pages/about';
+import Services from './pages/services';
 import NotFound from './pages/404';
 import CustomCursor from './components/ui/custom-cursor';
 import { ScrollToTop } from './components/scroll-to-top';
@@ -33,6 +34,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
+          <Route path="/services" element={<Services />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
