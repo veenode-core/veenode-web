@@ -5,7 +5,6 @@ export default function MissionValuesSection() {
   return (
     <section className="py-20 md:py-32 bg-white overflow-hidden relative">
       <div className="max-w-7xl mx-auto px-6">
-        {/* Mission */}
         <div className="mb-32">
           <p className="text-gold text-[10px] md:text-xs uppercase tracking-[0.2em] font-inter font-bold mb-8">
             Our Mission
@@ -20,13 +19,13 @@ export default function MissionValuesSection() {
         <div className="mb-16">
           <TextSplitReveal
             text="Core Values"
-            className="text-3xl md:text-5xl font-bold text-[#0f1f45]"
+            className="text-3xl md:text-4xl font-bold text-[#0f1f45]"
             tag="h2"
           />
         </div>
 
         {/* Values Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-gray-200 rounded-3xl overflow-hidden shadow-sm">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-gray-200 rounded-3xl overflow-hidden">
           {values.map(({ icon: Icon, title, description }) => (
             <div
               key={title}
