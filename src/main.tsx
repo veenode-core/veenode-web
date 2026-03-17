@@ -6,6 +6,8 @@ import Home from "./pages/home";
 import About from "./pages/about";
 import Services from "./pages/services";
 import ContactPage from "./pages/contact";
+import BlogDetailPage from "./pages/blog-details";
+import BlogPage from "./pages/blog-listing";
 import NotFound from "./pages/404";
 import CustomCursor from "./components/ui/custom-cursor";
 import { ScrollToTop } from "./components/scroll-to-top";
@@ -44,6 +46,8 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/:slug" element={<BlogDetailPage />} />
           </Route>
 
           {/* 404 — outside the layout if you want it full-screen, or inside if not */}
