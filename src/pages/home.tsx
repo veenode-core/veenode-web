@@ -1,4 +1,3 @@
-import WebLayout from "../components/web-layout";
 import HeroSection from "../components/home/hero-section";
 import TrustBar from "../components/home/trust-bar";
 import ServicesSection from "../components/home/services-section";
@@ -13,7 +12,7 @@ import StatsSectionMobile from "../components/home/stats-section-mobile";
 
 export default function Home() {
   return (
-    <WebLayout>
+    <>
       <HeroSection />
       <div className="hidden md:block">
         <VeenodeWordmark mode="outline-fill" />
@@ -31,6 +30,6 @@ export default function Home() {
       </div>
       <InsightsSection />
       <CTASection />
-    </WebLayout>
+    </>
   );
 }
