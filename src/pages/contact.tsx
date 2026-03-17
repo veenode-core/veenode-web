@@ -9,6 +9,8 @@ import {
   TwitterLogo,
   GithubLogo,
 } from "@phosphor-icons/react";
+import Field from "../components/ui/field";
+import Button from "../components/ui/button";
 
 const enquiryTypes = [
   "AI Engineering",
@@ -292,7 +294,6 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                {/* Name + Email row */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <Field
                     label="Full Name"
@@ -356,69 +357,15 @@ export default function ContactPage() {
                   >
                     * Required fields
                   </p>
-                  <button
-                    type="submit"
-                    className="group inline-flex items-center gap-3 text-sm font-bold text-[#0f1f45] hover:opacity-70 transition-opacity"
-                  >
+                  <Button type="submit" variant="cta" size="lg">
                     Send Message
-                    <span
-                      className="flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 group-hover:translate-x-0.5"
-                      style={{
-                        border: "1px solid rgba(15,31,69,0.2)",
-                        background: "rgba(15,31,69,0.04)",
-                      }}
-                    >
-                      <ArrowRight size={15} weight="bold" />
-                    </span>
-                  </button>
+                  </Button>
                 </div>
               </form>
             )}
           </div>
         </div>
       </section>
-    </div>
-  );
-}
-
-// ── Reusable underline field ──────────────────────────────────────────────────
-function Field({
-  label,
-  id,
-  type,
-  placeholder,
-  required,
-}: {
-  label: string;
-  id: string;
-  type: string;
-  placeholder: string;
-  required?: boolean;
-}) {
-  return (
-    <div className="flex flex-col gap-2">
-      <label
-        htmlFor={id}
-        className="text-[0.65rem] font-bold tracking-widest uppercase"
-        style={{ color: "rgba(15,31,69,0.4)" }}
-      >
-        {label} {required && <span style={{ color: "#F0A500" }}>*</span>}
-      </label>
-      <input
-        id={id}
-        type={type}
-        required={required}
-        placeholder={placeholder}
-        className="w-full text-sm bg-transparent outline-none transition-colors duration-200 pb-2"
-        style={{
-          borderBottom: "1px solid rgba(15,31,69,0.15)",
-          color: "#0f1f45",
-        }}
-        onFocus={(e) => (e.currentTarget.style.borderBottomColor = "#1A3C6E")}
-        onBlur={(e) =>
-          (e.currentTarget.style.borderBottomColor = "rgba(15,31,69,0.15)")
-        }
-      />
     </div>
   );
 }
