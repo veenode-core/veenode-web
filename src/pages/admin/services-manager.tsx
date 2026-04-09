@@ -1,11 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { servicesApi, apiRequest } from "../../services/api";
+import { uploadImage } from "../../services/cloudinary";
 import Button from "../../components/ui/button";
 import Field from "../../components/ui/field";
 
 export default function ServicesManager() {
   const [services, setServices] = useState<any[]>([]);
   const [isCreating, setIsCreating] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [newService, setNewService] = useState({
     name: "",
     headline: "",
@@ -39,18 +43,19 @@ export default function ServicesManager() {
     }
   };
 
-  const openWidget = () => {
-    (window as any).cloudinary.openUploadWidget(
-      {
-        cloudName: "desbso8v8",
-        uploadPreset: "ml_default",
-      },
-      (error: any, result: any) => {
-        if (!error && result && result.event === "success") {
-          setNewService({ ...newService, image: result.info.secure_url });
-        }
-      }
-    );
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const url = await uploadImage(file);
+      setNewService({ ...newService, image: url });
+    } catch (err: any) {
+      alert("Upload failed: " + err.message);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -98,15 +103,31 @@ export default function ServicesManager() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Field label="CTA Text" id="ctaT" value={newService.ctaText} onChange={e => setNewService({...newService, ctaText: e.target.value})} />
               <Field label="CTA Link" id="ctaH" value={newService.ctaHref} onChange={e => setNewService({...newService, ctaHref: e.target.value})} />
-              <div className="flex flex-col gap-2">
+               <div className="flex flex-col gap-2">
                   <label className="text-[0.65rem] font-bold tracking-widest uppercase text-[rgba(15,31,69,0.4)]">Image</label>
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    onChange={handleFileChange} 
+                    className="hidden" 
+                    accept="image/*"
+                  />
                   {newService.image ? (
                     <div className="flex items-center gap-4">
-                      <img src={newService.image} className="w-12 h-12 object-cover" alt="Preview" />
-                      <button type="button" onClick={openWidget} className="text-[10px] font-bold uppercase text-[#F0A500]">Change</button>
+                      <img src={newService.image} className="w-12 h-12 object-cover rounded" alt="Preview" />
+                      <button type="button" onClick={() => fileInputRef.current?.click()} className="text-[10px] font-bold uppercase text-[#F0A500]">Change</button>
                     </div>
                   ) : (
-                    <Button type="button" variant="secondary" size="sm" className="py-2" onClick={openWidget}>Upload Image</Button>
+                    <Button 
+                      type="button" 
+                      variant="secondary" 
+                      size="sm" 
+                      className="py-2" 
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                    >
+                      {uploading ? "Uploading..." : "Select Image"}
+                    </Button>
                   )}
                </div>
             </div>

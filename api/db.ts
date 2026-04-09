@@ -34,7 +34,16 @@ export async function getDB(): Promise<AppData> {
       return initialData;
     }
 
-    const response = await fetch(dbBlob.url);
+    const response = await fetch(dbBlob.url, {
+      headers: {
+        Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`,
+      },
+    });
+    
+    if (!response.ok) {
+       throw new Error(`Failed to fetch private blob: ${response.statusText}`);
+    }
+
     return await response.json();
   } catch (error) {
     console.error("Failed to fetch DB:", error);
@@ -45,7 +54,7 @@ export async function getDB(): Promise<AppData> {
 export async function saveDB(data: AppData) {
   try {
     await put(DATA_PATH, JSON.stringify(data), {
-      access: 'public',
+      access: 'private',
       addRandomSuffix: false, // Keep the same filename
     });
   } catch (error) {

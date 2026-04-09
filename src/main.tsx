@@ -12,6 +12,7 @@ import NotFound from "./pages/404";
 import LoginPage from "./pages/admin/login";
 import AdminDashboard from "./pages/admin/dashboard";
 import BlogManager from "./pages/admin/blog-manager";
+import BlogCreate from "./pages/admin/blog-create";
 import ServicesManager from "./pages/admin/services-manager";
 import CustomCursor from "./components/ui/custom-cursor";
 import { ScrollToTop } from "./components/scroll-to-top";
@@ -58,6 +59,7 @@ function App() {
           <Route path="/admin/login" element={<LoginPage />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/blog" element={<BlogManager />} />
+          <Route path="/admin/blog/new" element={<BlogCreate />} />
           <Route path="/admin/services" element={<ServicesManager />} />
 
           {/* 404 — outside the layout if you want it full-screen, or inside if not */}
