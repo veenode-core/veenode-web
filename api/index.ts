@@ -1,12 +1,9 @@
-import { supabase, applyFilters } from "./db";
+import { supabase, applyFilters } from "./db.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
 const JWT_SECRET = process.env.JWT_SECRET || "veenode_secret_123";
 
-/**
- * Helper to map Supabase snake_case back to Frontend camelCase
- */
 function mapPost(post: any) {
   if (!post) return null;
   return {
@@ -16,24 +13,31 @@ function mapPost(post: any) {
     publishedAt: post.published_at,
   };
 }
-export const config = {
-  runtime: 'edge',
-};
 
-export default async function handler(req: Request) {
-  const url = new URL(req.url);
+export default async function handler(req: any, res: any) {
+  const url = new URL(req.url, `http://${req.headers.host}`);
   const path = url.pathname;
   const method = req.method;
   const params = url.searchParams;
 
-  const headers: Record<string, string> = {
+  const standardHeaders = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Content-Type": "application/json",
   };
 
-  if (method === "OPTIONS") return new Response(null, { headers });
+  const send = (data: any, status = 200) => {
+    Object.entries(standardHeaders).forEach(([k, v]) => res.setHeader(k, v));
+    res.statusCode = status;
+    res.end(JSON.stringify(data));
+  };
+
+  if (method === "OPTIONS") {
+    Object.entries(standardHeaders).forEach(([k, v]) => res.setHeader(k, v));
+    res.statusCode = 204;
+    return res.end();
+  }
 
   try {
     const segments = path.split("/").filter(Boolean);
@@ -42,71 +46,53 @@ export default async function handler(req: Request) {
     const isServices = segments.includes("services");
     const isAuth = segments.includes("auth");
 
-    // --- DIAGNOSTIC ROOT ---
     if (segments.length === 0 || (segments.length === 1 && segments[0] === "api")) {
       const dbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "Not Set";
-      return new Response(JSON.stringify({ 
+      return send({ 
         message: "Veenode API (Supabase) is active.",
         version: "1.0.1",
         db: dbUrl
-      }), { headers });
+      });
     }
 
-    // --- PUBLIC READ ROUTES ---
     if (!isAdmin && !isAuth) {
       if (isBlog && method === "GET") {
         let query = supabase.from('blog_posts').select('*', { count: 'exact' });
         query = applyFilters(query, params);
         const { data, error, count } = await query;
         if (error) throw error;
-        return new Response(JSON.stringify({ data: (data || []).map(mapPost), count }), { headers });
+        return send({ data: (data || []).map(mapPost), count });
       }
 
       if (isServices && method === "GET") {
         const { data, error } = await supabase.from('services').select('*').order('title');
         if (error) throw error;
-        return new Response(JSON.stringify(data), { headers });
+        return send(data);
       }
     }
 
-    // --- AUTH ROUTES ---
     if (isAuth && method === "POST") {
-      const { email, password } = await req.json();
-      
-      const { data: admin, error: dbError } = await supabase
-        .from('admins')
-        .select('*')
-        .eq('email', email)
-        .single();
-
-      if (dbError && dbError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
-        console.error("Database error during login:", dbError);
-        return new Response(JSON.stringify({ error: "Database authentication failure" }), { status: 500, headers });
-      }
+      const { email, password } = req.body;
+      const { data: admin, error: dbError } = await supabase.from('admins').select('*').eq('email', email).single();
+      if (dbError && dbError.code !== 'PGRST116') throw dbError;
 
       const isValid = admin && await bcrypt.compare(password, admin.password);
-
       if (isValid) {
         const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: "24h" });
-        return new Response(JSON.stringify({ token, user: { email } }), { headers });
+        return send({ token, user: { email } });
       }
-
-      return new Response(JSON.stringify({ error: "Invalid credentials" }), { status: 401, headers });
+      return send({ error: "Invalid credentials" }, 401);
     }
 
-    // --- ADMIN ROUTES (Requires Auth) ---
     if (isAdmin) {
-      const authHeader = req.headers.get("Authorization");
-      if (!authHeader?.startsWith("Bearer ")) {
-        return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers });
-      }
+      const authHeader = req.headers["authorization"];
+      if (!authHeader?.startsWith("Bearer ")) return send({ error: "Unauthorized" }, 401);
       try {
         jwt.verify(authHeader.split(" ")[1], JWT_SECRET);
       } catch {
-        return new Response(JSON.stringify({ error: "Invalid token" }), { status: 401, headers });
+        return send({ error: "Invalid token" }, 401);
       }
 
-      // BLOG
       if (isBlog) {
         const lastSegment = segments[segments.length - 1];
         const id = lastSegment !== "blog" ? lastSegment : null;
@@ -114,11 +100,11 @@ export default async function handler(req: Request) {
         if (!id && method === "GET") {
           const { data, error, count } = await supabase.from('blog_posts').select('*', { count: 'exact' }).order('published_at', { ascending: false });
           if (error) throw error;
-          return new Response(JSON.stringify({ data: (data || []).map(mapPost), count }), { headers });
+          return send({ data: (data || []).map(mapPost), count });
         }
 
         if (method === "POST") {
-          const body = await req.json();
+          const body = req.body;
           const { data, error } = await supabase.from('blog_posts').insert([{
             title: body.title, slug: body.slug, excerpt: body.excerpt, body: body.body,
             category: body.category, cover_image: body.coverImage || body.cover_image,
@@ -126,17 +112,17 @@ export default async function handler(req: Request) {
             tags: body.tags, featured: !!body.featured, published_at: new Date().toISOString()
           }]).select().single();
           if (error) throw error;
-          return new Response(JSON.stringify(mapPost(data)), { headers });
+          return send(mapPost(data));
         }
 
         if (id && method === "GET") {
           const { data, error } = await supabase.from('blog_posts').select('*').eq('id', id).single();
           if (error) throw error;
-          return new Response(JSON.stringify(mapPost(data)), { headers });
+          return send(mapPost(data));
         }
 
         if (id && method === "PUT") {
-          const body = await req.json();
+          const body = req.body;
           const { data, error } = await supabase.from('blog_posts').update({
             title: body.title, slug: body.slug, excerpt: body.excerpt, body: body.body,
             category: body.category, cover_image: body.coverImage || body.cover_image,
@@ -144,17 +130,16 @@ export default async function handler(req: Request) {
             tags: body.tags, featured: !!body.featured
           }).eq('id', id).select().single();
           if (error) throw error;
-          return new Response(JSON.stringify(mapPost(data)), { headers });
+          return send(mapPost(data));
         }
 
         if (id && method === "DELETE") {
           const { error } = await supabase.from('blog_posts').delete().eq('id', id);
           if (error) throw error;
-          return new Response(JSON.stringify({ success: true }), { headers });
+          return send({ success: true });
         }
       }
 
-      // SERVICES
       if (isServices) {
         const lastSegment = segments[segments.length - 1];
         const id = lastSegment !== "services" ? lastSegment : null;
@@ -162,28 +147,28 @@ export default async function handler(req: Request) {
         if (!id && method === "GET") {
           const { data, error } = await supabase.from('services').select('*').order('title');
           if (error) throw error;
-          return new Response(JSON.stringify(data), { headers });
+          return send(data);
         }
 
         if (method === "POST") {
-          const body = await req.json();
+          const body = req.body;
           const { data, error } = await supabase.from('services').insert([body]).select().single();
           if (error) throw error;
-          return new Response(JSON.stringify(data), { headers });
+          return send(data);
         }
 
         if (id && method === "DELETE") {
           const { error } = await supabase.from('services').delete().eq('id', id);
           if (error) throw error;
-          return new Response(JSON.stringify({ success: true }), { headers });
+          return send({ success: true });
         }
       }
     }
 
-    return new Response(JSON.stringify({ error: `Path ${path} not found` }), { status: 404, headers });
+    return send({ error: `Path ${path} not found` }, 404);
   } catch (error: any) {
     console.error("API Error:", error);
-    return new Response(JSON.stringify({ error: error.message }), { status: 500, headers });
+    return send({ error: error.message }, 500);
   }
 }
 
