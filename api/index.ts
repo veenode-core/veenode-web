@@ -69,19 +69,25 @@ export default async function handler(req: Request) {
     // --- AUTH ROUTES ---
     if (isAuth && method === "POST") {
       const { email, password } = await req.json();
-      const envEmail = process.env.ADMIN_EMAIL || 'veenodetech@gmail.com';
-      const envPass = process.env.ADMIN_PASSWORD || 'VictorAkinode@10';
+      
+      const { data: admin, error: dbError } = await supabase
+        .from('admins')
+        .select('*')
+        .eq('email', email)
+        .single();
 
-      let isValid = (email === envEmail && password === envPass);
-      if (!isValid) {
-        const { data: admin } = await supabase.from('admins').select('*').eq('email', email).single();
-        if (admin && await bcrypt.compare(password, admin.password)) isValid = true;
+      if (dbError && dbError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+        console.error("Database error during login:", dbError);
+        return new Response(JSON.stringify({ error: "Database authentication failure" }), { status: 500, headers });
       }
+
+      const isValid = admin && await bcrypt.compare(password, admin.password);
 
       if (isValid) {
         const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: "24h" });
         return new Response(JSON.stringify({ token, user: { email } }), { headers });
       }
+
       return new Response(JSON.stringify({ error: "Invalid credentials" }), { status: 401, headers });
     }
 
