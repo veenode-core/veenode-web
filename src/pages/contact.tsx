@@ -11,6 +11,7 @@ import {
 } from "@phosphor-icons/react";
 import Field from "../components/ui/field";
 import Button from "../components/ui/button";
+import { useForm, ValidationError } from "@formspree/react";
 
 const enquiryTypes = [
   "AI Engineering",
@@ -49,7 +50,7 @@ export default function ContactPage() {
   const formRef = useRef<HTMLDivElement>(null);
 
   const [selected, setSelected] = useState<string | null>(null);
-  const [submitted, setSubmitted] = useState(false);
+  const [state, handleSubmit] = useForm("mdapvldb");
 
   useGSAP(
     () => {
@@ -69,10 +70,6 @@ export default function ContactPage() {
     { scope: pageRef },
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
-  };
 
   return (
     <div ref={pageRef} className="min-h-screen bg-white">
@@ -229,9 +226,8 @@ export default function ContactPage() {
             </div>
           </div>
 
-          {/* Right — form */}
           <div ref={formRef} className="lg:col-span-8 bg-white p-10 md:p-14">
-            {submitted ? (
+            {state.succeeded ? (
               <div className="h-full flex flex-col items-start justify-center gap-6 py-20">
                 <div
                   className="w-12 h-12 rounded-full flex items-center justify-center"
@@ -263,6 +259,8 @@ export default function ContactPage() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="flex flex-col gap-10">
+                {/* Hidden field for Formspree to capture selected enquiry type */}
+                <input type="hidden" name="enquiry_type" value={selected || ""} />
                 {/* Enquiry type */}
                 <div className="flex flex-col gap-4">
                   <label
@@ -295,26 +293,35 @@ export default function ContactPage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <Field
-                    label="Full Name"
-                    id="name"
-                    type="text"
-                    placeholder="Jane Okafor"
-                    required
-                  />
-                  <Field
-                    label="Email Address"
-                    id="email"
-                    type="email"
-                    placeholder="jane@company.com"
-                    required
-                  />
+                  <div className="flex flex-col gap-1">
+                    <Field
+                      label="Full Name"
+                      id="name"
+                      name="name"
+                      type="text"
+                      placeholder="Jane Okafor"
+                      required
+                    />
+                    <ValidationError prefix="Name" field="name" errors={state.errors} className="text-[10px] text-red-500 font-medium" />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <Field
+                      label="Email Address"
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="jane@company.com"
+                      required
+                    />
+                    <ValidationError prefix="Email" field="email" errors={state.errors} className="text-[10px] text-red-500 font-medium" />
+                  </div>
                 </div>
 
                 {/* Organisation */}
                 <Field
                   label="Organisation"
                   id="org"
+                  name="organisation"
                   type="text"
                   placeholder="Company or institution name"
                 />
@@ -330,6 +337,7 @@ export default function ContactPage() {
                   </label>
                   <textarea
                     id="message"
+                    name="message"
                     rows={5}
                     required
                     placeholder="Tell us about your project, challenge, or question…"
@@ -347,6 +355,7 @@ export default function ContactPage() {
                         "rgba(15,31,69,0.15)")
                     }
                   />
+                  <ValidationError prefix="Message" field="message" errors={state.errors} className="text-[10px] text-red-500 font-medium" />
                 </div>
 
                 {/* Submit */}
@@ -357,8 +366,8 @@ export default function ContactPage() {
                   >
                     * Required fields
                   </p>
-                  <Button type="submit" variant="cta" size="lg">
-                    Send Message
+                  <Button type="submit" variant="cta" size="lg" disabled={state.submitting}>
+                    {state.submitting ? "Sending..." : "Send Message"}
                   </Button>
                 </div>
               </form>

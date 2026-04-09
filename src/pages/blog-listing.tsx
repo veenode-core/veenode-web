@@ -1,13 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowUpRight, Clock, Tag } from "@phosphor-icons/react";
-import { blogPosts } from "../data/blog";
+import { blogPosts as staticBlogPosts } from "../data/blog";
 import type { BlogPost } from "../types/blog";
+import { blogApi } from "../services/api";
 
-const categories = [
-  "All",
-  ...Array.from(new Set(blogPosts.map((p) => p.category))),
-];
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-GB", {
@@ -201,9 +198,27 @@ function PostCard({ post }: { post: BlogPost }) {
 
 export default function BlogPage() {
   const [activeCategory, setActiveCategory] = useState("All");
+  const [posts, setPosts] = useState<BlogPost[]>(staticBlogPosts);
 
-  const featured = blogPosts.find((p) => p.featured);
-  const filtered = blogPosts
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const data = await blogApi.getAll();
+        if (data && data.length > 0) setPosts(data);
+      } catch (err) {
+        console.error("Failed to load posts from API", err);
+      }
+    };
+    fetchPosts();
+  }, []);
+
+  const categories = [
+    "All",
+    ...Array.from(new Set(posts.map((p) => p.category))),
+  ];
+
+  const featured = posts.find((p) => p.featured);
+  const filtered = posts
     .filter((p) => !p.featured || activeCategory !== "All")
     .filter((p) => activeCategory === "All" || p.category === activeCategory);
 

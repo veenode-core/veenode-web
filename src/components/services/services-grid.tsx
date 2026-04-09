@@ -1,12 +1,44 @@
 import Button from "../ui/button";
-import { serviceFeatures } from "../../data/services";
+import { serviceFeatures as staticServices } from "../../data/services";
+import { useState, useEffect } from "react";
+import { servicesApi } from "../../services/api";
+import {
+  Brain,
+  ShieldCheck,
+  Code,
+  ChartLineUp,
+  Gavel,
+} from "@phosphor-icons/react";
+
+const iconMap: Record<string, any> = {
+  Brain,
+  ShieldCheck,
+  Code,
+  ChartLineUp,
+  Gavel,
+};
 
 export default function ServicesGrid() {
+  const [services, setServices] = useState<any[]>(staticServices);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const data = await servicesApi.getAll();
+        if (data && data.length > 0) setServices(data);
+      } catch (err) {
+        console.error("Failed to load services from API", err);
+      }
+    };
+    fetchServices();
+  }, []);
+
   return (
     <section className="py-20 md:py-32">
       <div className="max-w-7xl mx-auto px-6">
-        {serviceFeatures.map((service, idx) => {
+        {services.map((service, idx) => {
           const isEven = idx % 2 === 0;
+          const Icon = iconMap[service.icon] || Brain;
 
           return (
             <div
@@ -34,7 +66,7 @@ export default function ServicesGrid() {
                     className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
                     style={{ background: "rgba(15,31,69,0.06)" }}
                   >
-                    <service.icon
+                    <Icon
                       size={17}
                       weight="regular"
                       className="text-primary"
@@ -44,7 +76,7 @@ export default function ServicesGrid() {
                     className="text-[0.65rem] font-bold tracking-[0.15em] uppercase"
                     style={{ color: "rgba(15,31,69,0.4)" }}
                   >
-                    {service.title}
+                    {service.name || service.title}
                   </span>
                   <span
                     className="ml-auto font-bold tabular-nums"
@@ -93,7 +125,7 @@ export default function ServicesGrid() {
               <div className="w-full md:w-1/2 relative overflow-hidden group min-h-75 md:min-h-0">
                 <img
                   src={service.image}
-                  alt={service.title}
+                  alt={service.name || service.title}
                   className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
                   style={{ transform: "scale(1.04)" }}
                 />
@@ -114,7 +146,7 @@ export default function ServicesGrid() {
                       color: "rgba(255,255,255,0.9)",
                     }}
                   >
-                    {service.title}
+                    {service.name || service.title}
                   </span>
                 </div>
               </div>

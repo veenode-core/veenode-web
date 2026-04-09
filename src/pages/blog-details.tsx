@@ -1,6 +1,9 @@
 import { Link, useParams, Navigate } from "react-router-dom";
 import { ArrowLeft, Clock, ArrowUpRight } from "@phosphor-icons/react";
-import { blogPosts } from "../data/blog";
+import { blogPosts as staticBlogPosts } from "../data/blog";
+import { useState, useEffect } from "react";
+import { blogApi } from "../services/api";
+import type { BlogPost } from "../types/blog";
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-GB", {
@@ -12,18 +15,27 @@ function formatDate(iso: string) {
 
 export default function BlogDetailPage() {
   const { slug } = useParams<{ slug: string }>();
-  const post = blogPosts.find((p) => p.slug === slug);
+  const [posts, setPosts] = useState<BlogPost[]>(staticBlogPosts);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const data = await blogApi.getAll();
+        if (data && data.length > 0) setPosts(data);
+      } catch (err) {
+        console.error("Failed to load posts", err);
+      }
+    };
+    fetchPosts();
+  }, []);
+
+  const post = posts.find((p) => p.slug === slug);
 
   if (!post) return <Navigate to="/blog" replace />;
 
-  // Split body on \n into paragraphs
-  const paragraphs = post.body
-    .split("\n")
-    .map((p) => p.trim())
-    .filter(Boolean);
+  const paragraphs = post.body.split("\n").map(p => p.trim()).filter(Boolean);
 
-  // Related posts — same category, excluding current
-  const related = blogPosts
+  const related = posts
     .filter((p) => p.slug !== post.slug && p.category === post.category)
     .slice(0, 3);
 

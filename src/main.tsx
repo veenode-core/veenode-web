@@ -9,6 +9,10 @@ import ContactPage from "./pages/contact";
 import BlogDetailPage from "./pages/blog-details";
 import BlogPage from "./pages/blog-listing";
 import NotFound from "./pages/404";
+import LoginPage from "./pages/admin/login";
+import AdminDashboard from "./pages/admin/dashboard";
+import BlogManager from "./pages/admin/blog-manager";
+import ServicesManager from "./pages/admin/services-manager";
 import CustomCursor from "./components/ui/custom-cursor";
 import { ScrollToTop } from "./components/scroll-to-top";
 import Preloader from "./components/preloader";
@@ -49,6 +53,12 @@ function App() {
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/blog/:slug" element={<BlogDetailPage />} />
           </Route>
+          
+          <Route path="/admin" element={<LoginPage />} />
+          <Route path="/admin/login" element={<LoginPage />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/blog" element={<BlogManager />} />
+          <Route path="/admin/services" element={<ServicesManager />} />
 
           {/* 404 — outside the layout if you want it full-screen, or inside if not */}
           <Route path="*" element={<NotFound />} />
