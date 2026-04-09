@@ -1,6 +1,7 @@
 import { StrictMode, useState, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import { Toaster } from "sonner";
 import "./index.css";
 import Home from "./pages/home";
 import About from "./pages/about";
@@ -36,6 +37,7 @@ function App() {
         <Preloader onComplete={() => setShowPreloader(false)} />
       )}
       <BrowserRouter>
+        <Toaster richColors position="top-right" />
         <CustomCursor />
         <ScrollToTop />
         <Routes>
@@ -60,6 +62,7 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/blog" element={<BlogManager />} />
           <Route path="/admin/blog/new" element={<BlogCreate />} />
+          <Route path="/admin/blog/edit/:id" element={<BlogCreate />} />
           <Route path="/admin/services" element={<ServicesManager />} />
 
           {/* 404 — outside the layout if you want it full-screen, or inside if not */}

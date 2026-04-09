@@ -1,16 +1,21 @@
-import { useState, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { blogApi } from "../../services/api";
+import { useState, useRef, useEffect } from "react";
+import { useNavigate, Link, useParams } from "react-router-dom";
+import { blogApi, servicesApi } from "../../services/api";
 import { uploadImage } from "../../services/cloudinary";
 import Button from "../../components/ui/button";
 import Field from "../../components/ui/field";
+import { toast } from "sonner";
 
 export default function BlogCreate() {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const isEdit = !!id;
+  
   const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(isEdit);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  const [newPost, setNewPost] = useState({
+  const initialFormState = {
     title: "",
     excerpt: "",
     body: "",
@@ -19,7 +24,41 @@ export default function BlogCreate() {
     author: "Victor Akinode",
     tags: "",
     featured: false
-  });
+  };
+
+  const [newPost, setNewPost] = useState(initialFormState);
+  const [services, setServices] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchServices();
+    if (isEdit) {
+      fetchPost();
+    }
+  }, [id]);
+
+  const fetchServices = async () => {
+    try {
+      const data = await servicesApi.getAll();
+      setServices(data || []);
+    } catch (err) {
+      console.error("Failed to load services for categories", err);
+    }
+  };
+
+  const fetchPost = async () => {
+    try {
+      const post = await blogApi.getById(id!);
+      setNewPost({
+        ...post,
+        tags: post.tags?.join(", ") || ""
+      });
+    } catch (err: any) {
+      toast.error("Failed to load post details: " + err.message);
+      navigate("/admin/blog");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const generateSlug = (title: string) => {
     return title
@@ -41,11 +80,13 @@ export default function BlogCreate() {
     if (!file) return;
 
     setUploading(true);
+    const toastId = toast.loading("Uploading image...");
     try {
       const url = await uploadImage(file);
       setNewPost({ ...newPost, coverImage: url });
+      toast.success("Image uploaded successfully!", { id: toastId });
     } catch (err: any) {
-      alert("Upload failed: " + err.message);
+      toast.error("Upload failed: " + err.message, { id: toastId });
     } finally {
       setUploading(false);
     }
@@ -53,34 +94,60 @@ export default function BlogCreate() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPost.coverImage) {
-      alert("Please upload a cover image first.");
+    if (!newPost.title || !newPost.body) {
+      toast.error("Title and body are required");
       return;
     }
+    
+    const toastId = toast.loading(isEdit ? "Updating post..." : "Publishing post...");
     
     try {
       const slug = generateSlug(newPost.title);
       const readTime = calculateReadTime(newPost.body);
 
-      await blogApi.create({
+      const payload = {
         ...newPost,
         slug,
-        readTime,
-        tags: newPost.tags.split(",").map(t => t.trim()),
-      });
-      navigate("/admin/blog");
-    } catch (err) {
-      alert("Failed to create post");
+        readTime: readTime.toString(),
+        tags: newPost.tags.split(",").map(t => t.trim()).filter(Boolean),
+      };
+
+      let result;
+      if (isEdit) {
+        result = await blogApi.update(id!, payload);
+        toast.success(`Post updated!`, { id: toastId });
+      } else {
+        result = await blogApi.create(payload);
+        toast.success(`Post published! (ID: ${result.id?.substring(0,8)}...)`, { id: toastId });
+      }
+
+      if (result) {
+        navigate("/admin/blog");
+      }
+    } catch (err: any) {
+      toast.error("Action failed: " + err.message, { id: toastId });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#fcfcfc]">
+        <div className="text-[rgba(15,31,69,0.3)] font-medium animate-pulse uppercase tracking-widest text-xs">Loading Post Details...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#fcfcfc] px-8 py-16">
       <div className="max-w-7xl mx-auto">
         <header className="flex justify-between items-center mb-12">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-[#0f1f45]">Create Post</h1>
-            <p className="text-sm text-[rgba(15,31,69,0.45)]">Draft your next insight</p>
+            <h1 className="text-3xl font-bold tracking-tight text-[#0f1f45]">
+              {isEdit ? "Edit Post" : "Create Post"}
+            </h1>
+            <p className="text-sm text-[rgba(15,31,69,0.45)]">
+              {isEdit ? "Update your existing article" : "Draft your next insight"}
+            </p>
           </div>
           <Link to="/admin/blog">
             <Button variant="secondary" size="sm">Cancel</Button>
@@ -117,7 +184,39 @@ export default function BlogCreate() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
-             <Field label="Category" id="cat" value={newPost.category} onChange={e => setNewPost({...newPost, category: e.target.value})} />
+             <div className="flex flex-col gap-2">
+                <label className="text-[0.65rem] font-bold tracking-widest uppercase text-[rgba(15,31,69,0.4)]">Category</label>
+                <select 
+                  className="w-full text-sm bg-transparent outline-none border-b border-[rgba(15,31,69,0.15)] pb-2 appearance-none cursor-pointer"
+                  value={newPost.category}
+                  onChange={e => setNewPost({...newPost, category: e.target.value})}
+                  required
+                >
+                  <optgroup label="Core Categories">
+                    <option value="Engineering">Engineering</option>
+                    <option value="AI & Machine Learning">AI & Machine Learning</option>
+                    <option value="Enterprise Mobility">Enterprise Mobility</option>
+                    <option value="Cybersecurity">Cybersecurity</option>
+                  </optgroup>
+                  
+                  {services.length > 0 && (
+                    <optgroup label="Our Services">
+                      {services.map(s => (
+                        <option key={s.id} value={s.title}>{s.title}</option>
+                      ))}
+                    </optgroup>
+                  )}
+
+                  <optgroup label="Others">
+                    <option value="Product Strategy">Product Strategy</option>
+                    <option value="Cloud Computing">Cloud Computing</option>
+                    <option value="DevOps">DevOps</option>
+                    <option value="Digital Transformation">Digital Transformation</option>
+                    <option value="Blockchain">Blockchain</option>
+                    <option value="Others">Others</option>
+                  </optgroup>
+                </select>
+             </div>
              <Field label="Tags (commas)" id="tags" value={newPost.tags} onChange={e => setNewPost({...newPost, tags: e.target.value})} />
              <div className="flex flex-col gap-2">
                 <label className="text-[0.65rem] font-bold tracking-widest uppercase text-[rgba(15,31,69,0.4)]">Cover Image</label>
@@ -137,7 +236,7 @@ export default function BlogCreate() {
                          <button type="button" onClick={() => fileInputRef.current?.click()} className="text-[10px] text-white font-bold uppercase">Change</button>
                       </div>
                     </div>
-                    <span className="text-[10px] text-green-600 font-bold uppercase">Ready to Publish</span>
+                    <span className="text-[10px] text-green-600 font-bold uppercase">Ready</span>
                   </div>
                 ) : (
                   <Button 
@@ -164,7 +263,9 @@ export default function BlogCreate() {
             <label htmlFor="feat" className="text-xs font-bold text-[#0f1f45]">Feature this post on home/listing</label>
           </div>
 
-          <Button type="submit" variant="cta" size="lg" className="mt-4">Publish Post</Button>
+          <Button type="submit" variant="cta" size="lg" className="mt-4">
+            {isEdit ? "Update Changes" : "Publish Post"}
+          </Button>
         </form>
       </div>
     </div>

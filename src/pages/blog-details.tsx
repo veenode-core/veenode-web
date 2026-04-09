@@ -1,6 +1,5 @@
 import { Link, useParams, Navigate } from "react-router-dom";
-import { ArrowLeft, Clock, ArrowUpRight } from "@phosphor-icons/react";
-import { blogPosts as staticBlogPosts } from "../data/blog";
+import { ArrowLeft, Clock, ArrowUpRight, CircleNotch } from "@phosphor-icons/react";
 import { useState, useEffect } from "react";
 import { blogApi } from "../services/api";
 import type { BlogPost } from "../types/blog";
@@ -15,19 +14,30 @@ function formatDate(iso: string) {
 
 export default function BlogDetailPage() {
   const { slug } = useParams<{ slug: string }>();
-  const [posts, setPosts] = useState<BlogPost[]>(staticBlogPosts);
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const data = await blogApi.getAll();
-        if (data && data.length > 0) setPosts(data);
+        const response = await blogApi.getAll({ limit: 100 });
+        setPosts(response.data || []);
       } catch (err) {
         console.error("Failed to load posts", err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchPosts();
-  }, []);
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <CircleNotch size={32} className="animate-spin text-[#0f1f45]/20" />
+      </div>
+    );
+  }
 
   const post = posts.find((p) => p.slug === slug);
 

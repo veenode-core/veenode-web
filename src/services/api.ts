@@ -26,8 +26,22 @@ export const authApi = {
 };
 
 export const blogApi = {
-  getAll: () => apiRequest('/blog'),
+  getAll: (params?: { q?: string; category?: string; page?: number; limit?: number }) => {
+    let query = '';
+    if (params) {
+      const qs = new URLSearchParams();
+      Object.entries(params).forEach(([k, v]) => {
+        if (v) qs.append(k, v.toString());
+      });
+      query = `?${qs.toString()}`;
+    }
+    return apiRequest(`/blog${query}`);
+  },
+  adminGetAll: () => apiRequest('/admin/blog'),
+  getById: (id: string) => apiRequest(`/admin/blog/${id}`),
   create: (data: any) => apiRequest('/admin/blog', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id: string, data: any) => apiRequest(`/admin/blog/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  delete: (id: string) => apiRequest(`/admin/blog/${id}`, { method: 'DELETE' }),
 };
 
 export const servicesApi = {

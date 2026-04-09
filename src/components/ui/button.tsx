@@ -2,7 +2,7 @@ import { type ButtonHTMLAttributes, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "@phosphor-icons/react";
 
-type ButtonVariant = "primary" | "secondary" | "ghost" | "cta" | "cta-light";
+type ButtonVariant = "primary" | "secondary" | "ghost" | "cta" | "cta-light" | "danger";
 type ButtonSize = "sm" | "md" | "lg";
 
 interface ButtonBaseProps {
@@ -28,6 +28,7 @@ const variantClasses: Record<ButtonVariant, string> = {
     "bg-transparent text-gray-700 hover:bg-gray-100 active:bg-gray-200 border border-transparent rounded-lg",
   cta: "bg-transparent text-[#0f1f45] hover:opacity-75 rounded-full",
   "cta-light": "bg-transparent text-white hover:opacity-75 rounded-full",
+  danger: "bg-red-600 text-white hover:bg-red-700 border border-red-600 rounded-full",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {

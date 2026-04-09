@@ -1,63 +1,40 @@
-import { put, list, del } from '@vercel/blob';
+import { createClient } from '@supabase/supabase-js';
 
-/**
- * Simple Database Wrapper for Vercel Blob
- * We store our data as JSON files in the blob storage.
- */
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-const DATA_PATH = 'data/db.json';
-
-interface AppData {
-  blogPosts: any[];
-  services: any[];
-  admins: any[];
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error("Missing Supabase environment variables!");
 }
 
-const initialData: AppData = {
-  blogPosts: [],
-  services: [],
-  admins: [
-    {
-      email: process.env.ADMIN_EMAIL || 'veenodetech@gmail.com',
-      password: process.env.ADMIN_PASSWORD || 'VictorAkinode@10', // In production, this should be hashed
-    }
-  ]
-};
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
-export async function getDB(): Promise<AppData> {
-  try {
-    const { blobs } = await list();
-    const dbBlob = blobs.find(b => b.pathname === DATA_PATH);
-    
-    if (!dbBlob) {
-      await saveDB(initialData);
-      return initialData;
-    }
+// Helper for search/filtering
+export function applyFilters(query: any, params: URLSearchParams) {
+  // Pagination
+  const page = parseInt(params.get('page') || '1');
+  const limit = parseInt(params.get('limit') || '10');
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
 
-    const response = await fetch(dbBlob.url, {
-      headers: {
-        Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`,
-      },
-    });
-    
-    if (!response.ok) {
-       throw new Error(`Failed to fetch private blob: ${response.statusText}`);
-    }
+  let filteredQuery = query.range(from, to);
 
-    return await response.json();
-  } catch (error) {
-    console.error("Failed to fetch DB:", error);
-    return initialData;
+  // Search (e.g. ?q=title)
+  const q = params.get('q');
+  if (q) {
+    filteredQuery = filteredQuery.ilike('title', `%${q}%`);
   }
-}
 
-export async function saveDB(data: AppData) {
-  try {
-    await put(DATA_PATH, JSON.stringify(data), {
-      access: 'private',
-      addRandomSuffix: false, // Keep the same filename
-    });
-  } catch (error) {
-    console.error("Failed to save DB:", error);
+  // Category filter
+  const category = params.get('category');
+  if (category && category !== 'All') {
+    filteredQuery = filteredQuery.eq('category', category);
   }
+
+  // Sorting
+  const sort = params.get('sort') || 'published_at';
+  const order = params.get('order') || 'desc';
+  filteredQuery = filteredQuery.order(sort, { ascending: order === 'asc' });
+
+  return filteredQuery;
 }

@@ -1,30 +1,29 @@
+import { useState, useEffect } from "react";
 import TextSplitReveal from "../ui/text-split-reveal";
-import { ArrowRight, ArrowUpRight } from "@phosphor-icons/react";
-
-const placeholders = [
-  {
-    tag: "AI Engineering",
-    title: "Blog Post Title 1",
-    excerpt: "Preview text for the blog post will appear here once published.",
-    readTime: "5 min read",
-  },
-  {
-    tag: "Cybersecurity",
-    title: "Blog Post Title 2",
-    excerpt: "Preview text for the blog post will appear here once published.",
-    readTime: "7 min read",
-  },
-  {
-    tag: "Machine Learning",
-    title: "Blog Post Title 3",
-    excerpt: "Preview text for the blog post will appear here once published.",
-    readTime: "6 min read",
-  },
-];
+import { ArrowRight, ArrowUpRight, CircleNotch } from "@phosphor-icons/react";
+import { blogApi } from "../../services/api";
+import type { BlogPost } from "../../types/blog";
 
 export default function InsightsSection() {
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLatest = async () => {
+      try {
+        const response = await blogApi.getAll({ limit: 3 });
+        setPosts(response.data || []);
+      } catch (err) {
+        console.error("Failed to load insights", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLatest();
+  }, []);
+
   return (
-    <section className="bg-primary py-20 md:py-32 overflow-hidden">
+    <section className="bg-primary py-20 md:py-32 overflow-hidden relative">
       {/* Grid texture */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -62,7 +61,7 @@ export default function InsightsSection() {
                 practitioners who do the work every day.
             </p>
             <a
-              href="/insights"
+              href="/blog"
               className="group inline-flex items-center gap-2.5 text-sm font-semibold text-white hover:opacity-70 transition-opacity"
             >
               Read Our Insights
@@ -77,78 +76,77 @@ export default function InsightsSection() {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10 rounded-2xl overflow-hidden">
-          {placeholders.map(({ tag, title, excerpt, readTime }, i) => (
-            <a
-              key={i}
-              href="/insights"
-              className="group flex flex-col"
-              style={{ background: "rgba(255,255,255,0.04)" }}
-            >
-              {/* Image placeholder */}
-              <div
-                className="relative overflow-hidden"
-                style={{
-                  height: "220px",
-                  background: "rgba(255,255,255,0.05)",
-                }}
+        {loading ? (
+             <div className="flex items-center justify-center py-20">
+                <CircleNotch size={32} className="animate-spin text-white/20" />
+             </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10 rounded-2xl overflow-hidden">
+            {posts.map((post) => (
+              <a
+                key={post.id}
+                href={`/blog/${post.slug}`}
+                className="group flex flex-col"
+                style={{ background: "rgba(255,255,255,0.04)" }}
               >
-                {/* Coming soon label */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span
-                    className="text-xs font-semibold tracking-widest uppercase px-3 py-1.5 rounded-full"
-                    style={{
-                      color: "rgba(255,255,255,0.3)",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                    }}
-                  >
-                    Coming soon
-                  </span>
-                </div>
-
-                {/* Hover arrow */}
+                {/* Image */}
                 <div
-                  className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 group-hover:translate-x-0 translate-x-1 -translate-y-1 group-hover:translate-y-0"
-                  style={{ background: "rgba(255,255,255,0.1)" }}
+                  className="relative overflow-hidden"
+                  style={{
+                    height: "220px",
+                    background: "rgba(255,255,255,0.05)",
+                  }}
                 >
-                  <ArrowUpRight size={14} weight="bold" color="white" />
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="flex flex-col gap-3 p-6 flex-1">
-                <div className="flex items-center justify-between">
-                  <span
-                    className="text-[0.65rem] font-bold tracking-widest uppercase"
-                    style={{ color: "rgba(240,165,0,0.85)" }}
+                  <img 
+                    src={post.coverImage} 
+                    className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 opacity-60 group-hover:opacity-100" 
+                    alt={post.title}
+                  />
+                  
+                  {/* Hover arrow */}
+                  <div
+                    className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 group-hover:translate-x-0 translate-x-1 -translate-y-1 group-hover:translate-y-0"
+                    style={{ background: "rgba(255,255,255,0.1)", backdropFilter: "blur(4px)" }}
                   >
-                    {tag}
-                  </span>
-                  <span
-                    className="text-[0.65rem] font-medium"
-                    style={{ color: "rgba(255,255,255,0.25)" }}
-                  >
-                    {readTime}
-                  </span>
+                    <ArrowUpRight size={14} weight="bold" color="white" />
+                  </div>
                 </div>
 
-                <h3
-                  className="font-bold text-base leading-snug group-hover:opacity-70 transition-opacity"
-                  style={{ color: "rgba(255,255,255,0.9)" }}
-                >
-                  {title}
-                </h3>
+                {/* Content */}
+                <div className="flex flex-col gap-3 p-6 flex-1">
+                  <div className="flex items-center justify-between">
+                    <span
+                      className="text-[0.65rem] font-bold tracking-widest uppercase"
+                      style={{ color: "rgba(240,165,0,0.85)" }}
+                    >
+                      {post.category}
+                    </span>
+                    <span
+                      className="text-[0.65rem] font-medium"
+                      style={{ color: "rgba(255,255,255,0.25)" }}
+                    >
+                      {post.readTime} min read
+                    </span>
+                  </div>
 
-                <p
-                  className="text-sm leading-relaxed"
-                  style={{ color: "rgba(255,255,255,0.35)" }}
-                >
-                  {excerpt}
-                </p>
-              </div>
-            </a>
-          ))}
-        </div>
+                  <h3
+                    className="font-bold text-base leading-snug group-hover:opacity-70 transition-opacity"
+                    style={{ color: "rgba(255,255,255,0.9)" }}
+                  >
+                    {post.title}
+                  </h3>
+
+                  <p
+                    className="text-sm leading-relaxed line-clamp-2"
+                    style={{ color: "rgba(255,255,255,0.35)" }}
+                  >
+                    {post.excerpt}
+                  </p>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

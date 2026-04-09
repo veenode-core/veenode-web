@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowUpRight, Clock, Tag } from "@phosphor-icons/react";
-import { blogPosts as staticBlogPosts } from "../data/blog";
+import { ArrowUpRight, Clock, Tag, CircleNotch, MagnifyingGlass } from "@phosphor-icons/react";
 import type { BlogPost } from "../types/blog";
 import { blogApi } from "../services/api";
 
@@ -198,29 +197,43 @@ function PostCard({ post }: { post: BlogPost }) {
 
 export default function BlogPage() {
   const [activeCategory, setActiveCategory] = useState("All");
-  const [posts, setPosts] = useState<BlogPost[]>(staticBlogPosts);
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchPosts = async () => {
+      setLoading(true);
       try {
-        const data = await blogApi.getAll();
-        if (data && data.length > 0) setPosts(data);
+        const response = await blogApi.getAll({ 
+          q: searchQuery, 
+          category: activeCategory === "All" ? undefined : activeCategory 
+        });
+        setPosts(response.data || []);
       } catch (err) {
         console.error("Failed to load posts from API", err);
+      } finally {
+        setLoading(false);
       }
     };
-    fetchPosts();
-  }, []);
+
+    const timer = setTimeout(() => {
+      fetchPosts();
+    }, 300); // Debounce search
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, activeCategory]);
 
   const categories = [
     "All",
-    ...Array.from(new Set(posts.map((p) => p.category))),
+    "Engineering",
+    "AI & Machine Learning",
+    "Cybersecurity",
+    "Digital Strategy"
   ];
 
   const featured = posts.find((p) => p.featured);
-  const filtered = posts
-    .filter((p) => !p.featured || activeCategory !== "All")
-    .filter((p) => activeCategory === "All" || p.category === activeCategory);
+  const filtered = posts.filter((p) => !p.featured || activeCategory !== "All");
 
   return (
     <div className="min-h-screen bg-white">
@@ -258,24 +271,39 @@ export default function BlogPage() {
         </div>
       </section>
 
-      {/* Category filter */}
+      {/* Category filter & Search */}
       <section className="max-w-7xl mx-auto px-6 pb-12">
-        <div className="flex items-center gap-2 flex-wrap">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className="text-xs font-semibold px-4 py-2 rounded-full transition-all duration-200"
-              style={{
-                border: `1px solid ${activeCategory === cat ? "#1A3C6E" : "rgba(15,31,69,0.15)"}`,
-                background: activeCategory === cat ? "#1A3C6E" : "transparent",
-                color:
-                  activeCategory === cat ? "#ffffff" : "rgba(15,31,69,0.55)",
-              }}
-            >
-              {cat}
-            </button>
-          ))}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex items-center gap-2 flex-wrap">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className="text-xs font-semibold px-4 py-2 rounded-full transition-all duration-200"
+                style={{
+                  border: `1px solid ${activeCategory === cat ? "#1A3C6E" : "rgba(15,31,69,0.15)"}`,
+                  background: activeCategory === cat ? "#1A3C6E" : "transparent",
+                  color:
+                    activeCategory === cat ? "#ffffff" : "rgba(15,31,69,0.55)",
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          <div className="relative max-w-sm w-full">
+            <input 
+              type="text"
+              placeholder="Search articles..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-white border border-[rgba(15,31,69,0.1)] rounded-full px-5 py-2.5 text-sm outline-none focus:border-[#F0A500] transition-colors"
+            />
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[rgba(15,31,69,0.3)] pointer-events-none">
+               <MagnifyingGlass size={16} weight="bold" />
+            </div>
+          </div>
         </div>
       </section>
 
@@ -288,7 +316,14 @@ export default function BlogPage() {
 
       {/* Posts grid */}
       <section className="max-w-7xl mx-auto px-6 pb-32">
-        {filtered.length > 0 ? (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-32 gap-4">
+            <CircleNotch size={32} className="animate-spin" style={{ color: "rgba(15,31,69,0.2)" }} />
+            <p className="text-sm font-medium uppercase tracking-widest" style={{ color: "rgba(15,31,69,0.3)" }}>
+              Fetching Insights...
+            </p>
+          </div>
+        ) : filtered.length > 0 ? (
           <div
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px rounded-2xl overflow-hidden"
             style={{ background: "rgba(15,31,69,0.08)" }}
