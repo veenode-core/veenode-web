@@ -16,6 +16,9 @@ function mapPost(post: any) {
     publishedAt: post.published_at,
   };
 }
+export const config = {
+  runtime: 'edge',
+};
 
 export default async function handler(req: Request) {
   const url = new URL(req.url);
