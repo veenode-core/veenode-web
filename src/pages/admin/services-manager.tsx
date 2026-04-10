@@ -11,7 +11,7 @@ export default function ServicesManager() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [newService, setNewService] = useState({
-    name: "",
+    title: "",
     headline: "",
     description: "",
     ctaText: "Learn More",
@@ -64,7 +64,7 @@ export default function ServicesManager() {
       await servicesApi.create(newService);
       setIsCreating(false);
       fetchServices();
-      setNewService({ name: "", headline: "", description: "", ctaText: "Learn More", ctaHref: "/services/", image: "", icon: "Brain" });
+      setNewService({ title: "", headline: "", description: "", ctaText: "Learn More", ctaHref: "/services/", image: "", icon: "Brain" });
     } catch (err) {
       alert("Failed to create service");
     }
@@ -86,7 +86,7 @@ export default function ServicesManager() {
         {isCreating && (
           <form onSubmit={handleCreate} className="bg-white p-10 border border-[rgba(15,31,69,0.08)] mb-12 flex flex-col gap-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Field label="Service Name" id="name" value={newService.name} onChange={e => setNewService({...newService, name: e.target.value})} required />
+              <Field label="Service Name" id="title" value={newService.title} onChange={e => setNewService({...newService, title: e.target.value})} required />
               <Field label="Headline" id="headline" value={newService.headline} onChange={e => setNewService({...newService, headline: e.target.value})} required />
             </div>
             
@@ -160,7 +160,7 @@ export default function ServicesManager() {
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-[rgba(15,31,69,0.06)]">
-                  <th className="px-6 py-4 text-[0.65rem] font-bold tracking-widest uppercase text-[rgba(15,31,69,0.4)]">Name</th>
+                  <th className="px-6 py-4 text-[0.65rem] font-bold tracking-widest uppercase text-[rgba(15,31,69,0.4)]">Title</th>
                   <th className="px-6 py-4 text-[0.65rem] font-bold tracking-widest uppercase text-[rgba(15,31,69,0.4)]">Description</th>
                   <th className="px-6 py-4"></th>
                 </tr>
@@ -168,7 +168,7 @@ export default function ServicesManager() {
               <tbody>
                 {services.map((svc: any) => (
                   <tr key={svc.id} className="border-b border-[rgba(15,31,69,0.03)] last:border-0">
-                    <td className="px-6 py-4 font-medium text-sm">{svc.name}</td>
+                    <td className="px-6 py-4 font-medium text-sm">{svc.title}</td>
                     <td className="px-6 py-4 text-xs text-[rgba(15,31,69,0.5)] truncate max-w-xs">{svc.description}</td>
                     <td className="px-6 py-4 text-right">
                        <button 

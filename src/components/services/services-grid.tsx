@@ -1,4 +1,4 @@
-import Button from "../ui/button";
+// import Button from "../ui/button";
 import { serviceFeatures as staticServices } from "../../data/services";
 import { useState, useEffect } from "react";
 import { servicesApi } from "../../services/api";
@@ -114,11 +114,11 @@ export default function ServicesGrid() {
                 </div>
 
                 {/* CTA */}
-                <div className="mt-10">
+                {/* <div className="mt-10">
                   <Button to={service.ctaHref} variant="cta" size="md">
                     {service.ctaText}
                   </Button>
-                </div>
+                </div> */}
               </div>
 
               {/* ── Image panel ── */}

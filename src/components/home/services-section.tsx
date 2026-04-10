@@ -1,9 +1,32 @@
+import { useEffect, useState } from "react";
 import TextSplitReveal from "../ui/text-split-reveal";
 import Button from "../ui/button";
-import { ArrowRight } from "@phosphor-icons/react";
-import { services } from "../../data/home";
+import { ArrowRight, Brain, ShieldCheck, Code, ChartLineUp, Gavel } from "@phosphor-icons/react";
+import { servicesApi } from "../../services/api";
+
+const ICON_MAP: Record<string, any> = {
+  Brain,
+  ShieldCheck,
+  Code,
+  ChartLineUp,
+  Gavel
+};
 
 export default function ServicesSection() {
+  const [dbServices, setDbServices] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const data = await servicesApi.getAll();
+        setDbServices(data || []);
+      } catch (err) {
+        console.error("Failed to load services", err);
+      }
+    };
+    fetch();
+  }, []);
+
   return (
     <section className="max-w-7xl mx-auto px-6 py-20 md:py-32">
       <div className="max-w-2xl mb-16">
@@ -22,38 +45,43 @@ export default function ServicesSection() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-gray-200 rounded-2xl overflow-hidden">
-        {services.map(({ icon: Icon, title, tagline, description, href }) => (
-          <a
-            key={title}
-            href={href}
-            className="group bg-white p-8 md:p-10 flex flex-col gap-5 hover:bg-[#f5f7fb] transition-colors duration-200"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div className="w-11 h-11 rounded-xl bg-[#0f1f45]/6 flex items-center justify-center shrink-0">
-                <Icon size={20} weight="regular" className="text-primary" />
-              </div>
-              <span className="text-xs font-semibold tracking-wide text-gray-700 uppercase mt-1 text-right leading-snug">
-                {tagline}
-              </span>
-            </div>
-
-            <h3 className="text-lg font-bold text-[#0f1f45]">{title}</h3>
-
-            <p className="text-sm text-muted leading-relaxed flex-1">
-              {description}
-            </p>
-
-            <Button 
-              to={href} 
-              variant="ghost" 
-              size="sm"
-              icon={<ArrowRight size={14} weight="bold" />}
-              className="self-start mt-auto"
+        {dbServices.map((svc) => {
+          const Icon = ICON_MAP[svc.icon] || Brain;
+          const href = svc.cta_href || svc.ctaHref || `/services/`;
+          
+          return (
+            <a
+              key={svc.id}
+              href={href}
+              className="group bg-white p-8 md:p-10 flex flex-col gap-5 hover:bg-[#f5f7fb] transition-colors duration-200"
             >
-              Learn more
-            </Button>
-          </a>
-        ))}
+              <div className="flex items-start justify-between gap-4">
+                <div className="w-11 h-11 rounded-xl bg-[#0f1f45]/6 flex items-center justify-center shrink-0">
+                  <Icon size={20} weight="regular" className="text-primary" />
+                </div>
+                <span className="text-xs font-semibold tracking-wide text-gray-700 uppercase mt-1 text-right leading-snug">
+                  {svc.headline}
+                </span>
+              </div>
+
+              <h3 className="text-lg font-bold text-[#0f1f45]">{svc.name}</h3>
+
+              <p className="text-sm text-muted leading-relaxed flex-1">
+                {svc.description}
+              </p>
+
+              <Button 
+                to={href} 
+                variant="ghost" 
+                size="sm"
+                icon={<ArrowRight size={14} weight="bold" />}
+                className="self-start mt-auto"
+              >
+                {svc.cta_text || svc.ctaText || "Learn more"}
+              </Button>
+            </a>
+          );
+        })}
       </div>
     </section>
   );

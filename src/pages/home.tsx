@@ -1,6 +1,5 @@
 import HeroSection from "../components/home/hero-section";
 import TrustBar from "../components/home/trust-bar";
-import ServicesSection from "../components/home/services-section";
 import DifferentiatorsSection from "../components/home/differentiators-section";
 import GlobalReachSection from "../components/home/global-reach-section";
 import IndustriesSection from "../components/home/industries-section";
@@ -18,7 +17,6 @@ export default function Home() {
         <VeenodeWordmark mode="outline-fill" />
       </div>
       <TrustBar />
-      <ServicesSection />
       <DifferentiatorsSection />
       <GlobalReachSection />
       <IndustriesSection />

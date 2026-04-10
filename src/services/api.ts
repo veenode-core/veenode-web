@@ -44,6 +44,11 @@ export const blogApi = {
   delete: (id: string) => apiRequest(`/admin/blog/${id}`, { method: 'DELETE' }),
 };
 
+export const adminUsersApi = {
+  getAll: () => apiRequest('/admin/users'),
+  create: (data: any) => apiRequest('/admin/users', { method: 'POST', body: JSON.stringify(data) }),
+};
+
 export const servicesApi = {
   getAll: () => apiRequest('/services'),
   create: (data: any) => apiRequest('/admin/services', { method: 'POST', body: JSON.stringify(data) }),

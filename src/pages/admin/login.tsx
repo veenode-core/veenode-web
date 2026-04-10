@@ -93,11 +93,6 @@ export default function LoginPage() {
                   placeholder="••••••••"
                   required 
                 />
-                <div className="flex justify-end mt-1">
-                   <button type="button" className="text-[10px] font-bold text-primary/30 hover:text-primary transition-colors uppercase tracking-wider">
-                     Forgot?
-                   </button>
-                </div>
               </div>
             </div>
 

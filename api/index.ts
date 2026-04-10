@@ -16,7 +16,6 @@ function mapPost(post: any) {
 
 /**
  * The core API logic using Web Standard Request/Response.
- * This works natively in Bun and is adapted for Vercel below.
  */
 async function unifiedHandler(req: any): Promise<Response> {
   const url = new URL(req.url, `http://${req.headers?.host || 'localhost'}`);
@@ -40,17 +39,7 @@ async function unifiedHandler(req: any): Promise<Response> {
     const isServices = segments.includes("services");
     const isAuth = segments.includes("auth");
 
-    // --- DIAGNOSTIC ROOT ---
-    if (segments.length === 0 || (segments.length === 1 && segments[0] === "api")) {
-      const dbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "Not Set";
-      return new Response(JSON.stringify({ 
-        message: "Veenode API (Supabase) is active.",
-        version: "1.0.1",
-        db: dbUrl
-      }), { status: 200, headers });
-    }
-
-    // Helper to extract body safely across environments (Bun vs Vercel)
+    // Helper to extract body safely
     const getBody = async (r: any) => {
       try {
         if (typeof r.json === 'function') {
@@ -61,6 +50,15 @@ async function unifiedHandler(req: any): Promise<Response> {
         return r.body || {};
       }
     };
+
+    // --- DIAGNOSTIC ROOT ---
+    if (segments.length === 0 || (segments.length === 1 && segments[0] === "api")) {
+      const dbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "Not Set";
+      return new Response(JSON.stringify({ 
+        message: "Veenode API is active.",
+        db: dbUrl
+      }), { status: 200, headers });
+    }
 
     // --- AUTH ROUTES ---
     if (isAuth && method === "POST") {
@@ -112,6 +110,26 @@ async function unifiedHandler(req: any): Promise<Response> {
         return new Response(JSON.stringify({ error: "Invalid token" }), { status: 401, headers });
       }
 
+      // Admin Management
+      if (segments.includes("users")) {
+        if (method === "GET") {
+          const { data, error } = await supabase.from('admins').select('id, email, created_at').order('created_at', { ascending: false });
+          if (error) throw error;
+          return new Response(JSON.stringify(data), { status: 200, headers });
+        }
+        if (method === "POST") {
+          const body = await getBody(req);
+          const hashedPassword = bcrypt.hashSync(body.password, 10);
+          const { data, error } = await supabase.from('admins').insert([{
+            email: body.email,
+            password: hashedPassword
+          }]).select('id, email, created_at').single();
+          if (error) throw error;
+          return new Response(JSON.stringify(data), { status: 200, headers });
+        }
+      }
+
+      // Blog Management
       if (isBlog) {
         const lastSegment = segments[segments.length - 1];
         const id = lastSegment !== "blog" ? lastSegment : null;
@@ -125,16 +143,10 @@ async function unifiedHandler(req: any): Promise<Response> {
         if (method === "POST") {
           const body = await getBody(req);
           const { data, error } = await supabase.from('blog_posts').insert([{
-            title: body.title,
-            slug: body.slug,
-            excerpt: body.excerpt,
-            body: body.body,
-            category: body.category,
-            cover_image: body.coverImage || body.cover_image,
-            author: body.author,
-            read_time: parseInt((body.readTime || body.read_time || "5").toString()),
-            tags: body.tags,
-            featured: body.featured === true || body.featured === 'true',
+            title: body.title, slug: body.slug, excerpt: body.excerpt, body: body.body,
+            category: body.category, cover_image: body.coverImage || body.cover_image,
+            author: body.author, read_time: parseInt((body.readTime || body.read_time || "5").toString()),
+            tags: body.tags, featured: body.featured === true || body.featured === 'true',
             published_at: new Date().toISOString()
           }]).select().single();
           if (error) throw error;
@@ -149,8 +161,6 @@ async function unifiedHandler(req: any): Promise<Response> {
 
         if (id && method === "PUT") {
           const body = await getBody(req);
-          console.log(`DEBUG: Updating Blog ID: [${id}]`);
-          
           const updateData: any = {};
           if (body.title !== undefined) updateData.title = body.title;
           if (body.slug !== undefined) updateData.slug = body.slug;
@@ -158,33 +168,15 @@ async function unifiedHandler(req: any): Promise<Response> {
           if (body.body !== undefined) updateData.body = body.body;
           if (body.category !== undefined) updateData.category = body.category;
           if (body.author !== undefined) updateData.author = body.author;
-          
           const coverImg = body.coverImage || body.cover_image;
           if (coverImg !== undefined) updateData.cover_image = coverImg;
-          
           const rdTime = body.readTime || body.read_time;
           if (rdTime !== undefined) updateData.read_time = parseInt(rdTime.toString());
-          
           if (body.tags !== undefined) updateData.tags = body.tags;
-          
-          if (body.featured !== undefined) {
-             updateData.featured = body.featured === true || body.featured === 'true';
-          }
-
-          console.log("DEBUG: Update Payload:", JSON.stringify(updateData));
+          if (body.featured !== undefined) updateData.featured = body.featured === true || body.featured === 'true';
 
           const { data, error } = await supabase.from('blog_posts').update(updateData).eq('id', id).select();
-          
-          if (error) {
-            console.error("Update Error:", error);
-            throw error;
-          }
-
-          if (!data || data.length === 0) {
-            console.warn(`Update failed: No rows matched ID ${id}`);
-            return new Response(JSON.stringify({ error: "Post not found" }), { status: 404, headers });
-          }
-
+          if (error) throw error;
           return new Response(JSON.stringify(mapPost(data[0])), { status: 200, headers });
         }
 
@@ -195,6 +187,7 @@ async function unifiedHandler(req: any): Promise<Response> {
         }
       }
 
+      // Services Management
       if (isServices) {
         const lastSegment = segments[segments.length - 1];
         const id = lastSegment !== "services" ? lastSegment : null;
@@ -206,8 +199,12 @@ async function unifiedHandler(req: any): Promise<Response> {
         }
 
         if (method === "POST") {
-          const body = req.body || (typeof req.json === 'function' ? await req.json() : {});
-          const { data, error } = await supabase.from('services').insert([body]).select().single();
+          const body = await getBody(req);
+          const { data, error } = await supabase.from('services').insert([{
+            title: body.title || body.name, headline: body.headline, description: body.description,
+            cta_text: body.ctaText || body.cta_text, cta_href: body.ctaHref || body.cta_href,
+            image: body.image, icon: body.icon
+          }]).select().single();
           if (error) throw error;
           return new Response(JSON.stringify(data), { status: 200, headers });
         }
@@ -222,15 +219,10 @@ async function unifiedHandler(req: any): Promise<Response> {
 
     return new Response(JSON.stringify({ error: `Path ${path} not found` }), { status: 404, headers });
   } catch (error: any) {
-    console.error("API Error:", error);
     return new Response(JSON.stringify({ error: error.message }), { status: 500, headers });
   }
 }
 
-/**
- * Vercel / Node.js Adapter
- * Vercel will call this default export. We check if it provides 'res'.
- */
 export default async function handler(req: any, res: any) {
   if (res && typeof res.setHeader === 'function') {
     const response = await unifiedHandler(req);
@@ -238,14 +230,10 @@ export default async function handler(req: any, res: any) {
     response.headers.forEach((v, k) => res.setHeader(k, v));
     res.end(await response.text());
   } else {
-    // If called in Bun or a standard fetch environment
     return unifiedHandler(req);
   }
 }
 
-/**
- * Local Bun Dev Support
- */
 if (typeof Bun !== 'undefined' && (import.meta.main || process.env.BUN_ENV === 'development')) {
   const port = process.env.PORT || 3001;
   Bun.serve({ port, fetch: unifiedHandler });
