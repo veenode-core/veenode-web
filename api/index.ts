@@ -14,17 +14,30 @@ function mapPost(post: any) {
   };
 }
 
-/**
- * The core API logic using Web Standard Request/Response.
- */
 async function unifiedHandler(req: any): Promise<Response> {
   const url = new URL(req.url, `http://${req.headers?.host || 'localhost'}`);
   const path = url.pathname;
   const method = req.method;
   const params = url.searchParams;
 
+  const allowedOrigins = [
+    "http://localhost:5173",
+    "https://veenode.org",
+    "https://www.veenode.org",
+    "https://veenode-web.vercel.app"
+  ];
+
+  const origin = req.headers?.origin || req.headers?.get?.("origin") || "";
+  const isAllowed = allowedOrigins.includes(origin);
+  if (origin && !isAllowed) {
+    return new Response(JSON.stringify({ error: "Forbidden: Origin not allowed" }), { 
+      status: 403, 
+      headers: { "Content-Type": "application/json" } 
+    });
+  }
+
   const headers = {
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": isAllowed ? origin : "",
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Content-Type": "application/json",
