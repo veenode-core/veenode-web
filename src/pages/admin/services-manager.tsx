@@ -102,7 +102,13 @@ export default function ServicesManager() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Field label="CTA Text" id="ctaT" value={newService.ctaText} onChange={e => setNewService({...newService, ctaText: e.target.value})} />
-              <Field label="CTA Link" id="ctaH" value={newService.ctaHref} onChange={e => setNewService({...newService, ctaHref: e.target.value})} />
+              <Field label="CTA Link" id="ctaH" value={newService.ctaHref} onChange={e => {
+                let val = e.target.value;
+                if (!val.startsWith("/services/")) {
+                  val = "/services/";
+                }
+                setNewService({...newService, ctaHref: val});
+              }} />
                <div className="flex flex-col gap-2">
                   <label className="text-[0.65rem] font-bold tracking-widest uppercase text-[rgba(15,31,69,0.4)]">Image</label>
                   <input 
