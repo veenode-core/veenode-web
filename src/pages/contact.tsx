@@ -49,7 +49,7 @@ export default function ContactPage() {
   const leftRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
 
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string[]>([]);
   const [state, handleSubmit] = useForm("mdapvldb");
 
   useGSAP(
@@ -260,7 +260,7 @@ export default function ContactPage() {
             ) : (
               <form onSubmit={handleSubmit} className="flex flex-col gap-10">
                 {/* Hidden field for Formspree to capture selected enquiry type */}
-                <input type="hidden" name="enquiry_type" value={selected || ""} />
+                <input type="hidden" name="enquiry_type" value={selected.join(", ")} />
                 {/* Enquiry type */}
                 <div className="flex flex-col gap-4">
                   <label
@@ -270,25 +270,32 @@ export default function ContactPage() {
                     What are you interested in?
                   </label>
                   <div className="flex flex-wrap gap-2">
-                    {enquiryTypes.map((type) => (
-                      <button
-                        type="button"
-                        key={type}
-                        onClick={() => setSelected(type)}
-                        className="text-xs font-semibold px-4 py-2 rounded-full transition-all duration-200"
-                        style={{
-                          border: `1px solid ${selected === type ? "#1A3C6E" : "rgba(15,31,69,0.15)"}`,
-                          background:
-                            selected === type ? "#1A3C6E" : "transparent",
-                          color:
-                            selected === type
+                    {enquiryTypes.map((type) => {
+                      const isSelected = selected.includes(type);
+                      return (
+                        <button
+                          type="button"
+                          key={type}
+                          onClick={() => {
+                            setSelected((prev) =>
+                              prev.includes(type)
+                                ? prev.filter((t) => t !== type)
+                                : [...prev, type],
+                            );
+                          }}
+                          className="text-xs font-semibold px-4 py-2 rounded-full transition-all duration-200"
+                          style={{
+                            border: `1px solid ${isSelected ? "#1A3C6E" : "rgba(15,31,69,0.15)"}`,
+                            background: isSelected ? "#1A3C6E" : "transparent",
+                            color: isSelected
                               ? "#ffffff"
                               : "rgba(15,31,69,0.55)",
-                        }}
-                      >
-                        {type}
-                      </button>
-                    ))}
+                          }}
+                        >
+                          {type}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
