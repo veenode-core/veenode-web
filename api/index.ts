@@ -14,30 +14,24 @@ function mapPost(post: any) {
   };
 }
 
-export default async function handler(req: any, res: any) {
-  const url = new URL(req.url, `http://${req.headers.host}`);
+/**
+ * The core API logic using Web Standard Request/Response.
+ * This works natively in Bun and is adapted for Vercel below.
+ */
+async function unifiedHandler(req: any): Promise<Response> {
+  const url = new URL(req.url, `http://${req.headers?.host || 'localhost'}`);
   const path = url.pathname;
   const method = req.method;
   const params = url.searchParams;
 
-  const standardHeaders = {
+  const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Content-Type": "application/json",
   };
 
-  const send = (data: any, status = 200) => {
-    Object.entries(standardHeaders).forEach(([k, v]) => res.setHeader(k, v));
-    res.statusCode = status;
-    res.end(JSON.stringify(data));
-  };
-
-  if (method === "OPTIONS") {
-    Object.entries(standardHeaders).forEach(([k, v]) => res.setHeader(k, v));
-    res.statusCode = 204;
-    return res.end();
-  }
+  if (method === "OPTIONS") return new Response(null, { status: 204, headers });
 
   try {
     const segments = path.split("/").filter(Boolean);
@@ -46,51 +40,74 @@ export default async function handler(req: any, res: any) {
     const isServices = segments.includes("services");
     const isAuth = segments.includes("auth");
 
+    // --- DIAGNOSTIC ROOT ---
     if (segments.length === 0 || (segments.length === 1 && segments[0] === "api")) {
       const dbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "Not Set";
-      return send({ 
+      return new Response(JSON.stringify({ 
         message: "Veenode API (Supabase) is active.",
         version: "1.0.1",
         db: dbUrl
-      });
+      }), { status: 200, headers });
     }
 
+    // --- AUTH ROUTES ---
+    if (isAuth && method === "POST") {
+      let body: any = {};
+      try {
+        if (typeof req.json === 'function') {
+          body = await req.json();
+        } else if (req.body) {
+          body = req.body;
+        }
+      } catch (e) {
+          console.error("Body parsing error:", e);
+      }
+
+      const { email, password } = body;
+      const { data: admin, error: dbError } = await supabase.from('admins').select('*').eq('email', email).single();
+      
+      if (dbError && dbError.code !== 'PGRST116') throw dbError;
+
+      if (!admin) {
+          return new Response(JSON.stringify({ error: "Invalid credentials" }), { status: 401, headers });
+      }
+
+      const isValid = bcrypt.compareSync(password, admin.password);
+
+      if (isValid) {
+        const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: "24h" });
+        return new Response(JSON.stringify({ token, user: { email } }), { status: 200, headers });
+      }
+      return new Response(JSON.stringify({ error: "Invalid credentials" }), { status: 401, headers });
+    }
+
+    // --- PUBLIC READ ROUTES ---
     if (!isAdmin && !isAuth) {
       if (isBlog && method === "GET") {
         let query = supabase.from('blog_posts').select('*', { count: 'exact' });
         query = applyFilters(query, params);
         const { data, error, count } = await query;
         if (error) throw error;
-        return send({ data: (data || []).map(mapPost), count });
+        return new Response(JSON.stringify({ data: (data || []).map(mapPost), count }), { status: 200, headers });
       }
 
       if (isServices && method === "GET") {
         const { data, error } = await supabase.from('services').select('*').order('title');
         if (error) throw error;
-        return send(data);
+        return new Response(JSON.stringify(data), { status: 200, headers });
       }
     }
 
-    if (isAuth && method === "POST") {
-      const { email, password } = req.body;
-      const { data: admin, error: dbError } = await supabase.from('admins').select('*').eq('email', email).single();
-      if (dbError && dbError.code !== 'PGRST116') throw dbError;
-
-      const isValid = admin && await bcrypt.compare(password, admin.password);
-      if (isValid) {
-        const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: "24h" });
-        return send({ token, user: { email } });
-      }
-      return send({ error: "Invalid credentials" }, 401);
-    }
-
+    // --- ADMIN ROUTES (Requires Auth) ---
     if (isAdmin) {
-      const authHeader = req.headers["authorization"];
-      if (!authHeader?.startsWith("Bearer ")) return send({ error: "Unauthorized" }, 401);
+      const authHeader = req.headers?.authorization || req.headers?.get?.("Authorization");
+      if (!authHeader?.startsWith("Bearer ")) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers });
+      }
       try {
         jwt.verify(authHeader.split(" ")[1], JWT_SECRET);
       } catch {
-        return send({ error: "Invalid token" }, 401);
+        return new Response(JSON.stringify({ error: "Invalid token" }), { status: 401, headers });
       }
 
       if (isBlog) {
@@ -100,11 +117,11 @@ export default async function handler(req: any, res: any) {
         if (!id && method === "GET") {
           const { data, error, count } = await supabase.from('blog_posts').select('*', { count: 'exact' }).order('published_at', { ascending: false });
           if (error) throw error;
-          return send({ data: (data || []).map(mapPost), count });
+          return new Response(JSON.stringify({ data: (data || []).map(mapPost), count }), { status: 200, headers });
         }
 
         if (method === "POST") {
-          const body = req.body;
+          const body = req.body || (typeof req.json === 'function' ? await req.json() : {});
           const { data, error } = await supabase.from('blog_posts').insert([{
             title: body.title, slug: body.slug, excerpt: body.excerpt, body: body.body,
             category: body.category, cover_image: body.coverImage || body.cover_image,
@@ -112,17 +129,17 @@ export default async function handler(req: any, res: any) {
             tags: body.tags, featured: !!body.featured, published_at: new Date().toISOString()
           }]).select().single();
           if (error) throw error;
-          return send(mapPost(data));
+          return new Response(JSON.stringify(mapPost(data)), { status: 200, headers });
         }
 
         if (id && method === "GET") {
           const { data, error } = await supabase.from('blog_posts').select('*').eq('id', id).single();
           if (error) throw error;
-          return send(mapPost(data));
+          return new Response(JSON.stringify(mapPost(data)), { status: 200, headers });
         }
 
         if (id && method === "PUT") {
-          const body = req.body;
+          const body = req.body || (typeof req.json === 'function' ? await req.json() : {});
           const { data, error } = await supabase.from('blog_posts').update({
             title: body.title, slug: body.slug, excerpt: body.excerpt, body: body.body,
             category: body.category, cover_image: body.coverImage || body.cover_image,
@@ -130,13 +147,13 @@ export default async function handler(req: any, res: any) {
             tags: body.tags, featured: !!body.featured
           }).eq('id', id).select().single();
           if (error) throw error;
-          return send(mapPost(data));
+          return new Response(JSON.stringify(mapPost(data)), { status: 200, headers });
         }
 
         if (id && method === "DELETE") {
           const { error } = await supabase.from('blog_posts').delete().eq('id', id);
           if (error) throw error;
-          return send({ success: true });
+          return new Response(JSON.stringify({ success: true }), { status: 200, headers });
         }
       }
 
@@ -147,33 +164,52 @@ export default async function handler(req: any, res: any) {
         if (!id && method === "GET") {
           const { data, error } = await supabase.from('services').select('*').order('title');
           if (error) throw error;
-          return send(data);
+          return new Response(JSON.stringify(data), { status: 200, headers });
         }
 
         if (method === "POST") {
-          const body = req.body;
+          const body = req.body || (typeof req.json === 'function' ? await req.json() : {});
           const { data, error } = await supabase.from('services').insert([body]).select().single();
           if (error) throw error;
-          return send(data);
+          return new Response(JSON.stringify(data), { status: 200, headers });
         }
 
         if (id && method === "DELETE") {
           const { error } = await supabase.from('services').delete().eq('id', id);
           if (error) throw error;
-          return send({ success: true });
+          return new Response(JSON.stringify({ success: true }), { status: 200, headers });
         }
       }
     }
 
-    return send({ error: `Path ${path} not found` }, 404);
+    return new Response(JSON.stringify({ error: `Path ${path} not found` }), { status: 404, headers });
   } catch (error: any) {
     console.error("API Error:", error);
-    return send({ error: error.message }, 500);
+    return new Response(JSON.stringify({ error: error.message }), { status: 500, headers });
   }
 }
 
-if (import.meta.main || process.env.BUN_ENV === 'development') {
+/**
+ * Vercel / Node.js Adapter
+ * Vercel will call this default export. We check if it provides 'res'.
+ */
+export default async function handler(req: any, res: any) {
+  if (res && typeof res.setHeader === 'function') {
+    const response = await unifiedHandler(req);
+    res.statusCode = response.status;
+    response.headers.forEach((v, k) => res.setHeader(k, v));
+    res.end(await response.text());
+  } else {
+    // If called in Bun or a standard fetch environment
+    return unifiedHandler(req);
+  }
+}
+
+/**
+ * Local Bun Dev Support
+ */
+if (typeof Bun !== 'undefined' && (import.meta.main || process.env.BUN_ENV === 'development')) {
   const port = process.env.PORT || 3001;
-  Bun.serve({ port, fetch: handler });
-  console.log(`Bun (Supabase Resilient) API running at http://localhost:${port}`);
+  Bun.serve({ port, fetch: unifiedHandler });
+  console.log(`Bun (Universal) API running at http://localhost:${port}`);
 }
