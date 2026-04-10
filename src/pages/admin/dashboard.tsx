@@ -74,7 +74,7 @@ export default function AdminDashboard() {
       {/* Header */}
       <nav className="bg-white border-b border-[rgba(15,31,69,0.06)] px-8 py-4 flex justify-between items-center">
         <div className="font-bold text-xl tracking-tighter">
-          VN<span className="text-[#F0A500]">.</span>ADMIN
+          VeeNode<span className="text-[#F0A500]">.</span>Admin
         </div>
         <button 
           onClick={handleLogout}
