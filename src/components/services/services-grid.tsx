@@ -113,10 +113,9 @@ export default function ServicesGrid() {
                   </p>
                 </div>
 
-                {/* CTA */}
                 <div className="mt-10">
-                  <Button to={service.ctaHref} variant="cta" size="md">
-                    {service.ctaText || 'Read More'}
+                  <Button to={service.ctaHref || service.cta_href || "/services/"} variant="cta" size="md">
+                    {service.ctaText || service.cta_text || 'Read More'}
                   </Button>
                 </div>
               </div>
