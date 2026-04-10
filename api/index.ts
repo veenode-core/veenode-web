@@ -50,19 +50,21 @@ async function unifiedHandler(req: any): Promise<Response> {
       }), { status: 200, headers });
     }
 
+    // Helper to extract body safely across environments (Bun vs Vercel)
+    const getBody = async (r: any) => {
+      try {
+        if (typeof r.json === 'function') {
+          return await r.json();
+        }
+        return r.body || {};
+      } catch (err) {
+        return r.body || {};
+      }
+    };
+
     // --- AUTH ROUTES ---
     if (isAuth && method === "POST") {
-      let body: any = {};
-      try {
-        if (typeof req.json === 'function') {
-          body = await req.json();
-        } else if (req.body) {
-          body = req.body;
-        }
-      } catch (e) {
-          console.error("Body parsing error:", e);
-      }
-
+      const body = await getBody(req);
       const { email, password } = body;
       const { data: admin, error: dbError } = await supabase.from('admins').select('*').eq('email', email).single();
       
@@ -121,12 +123,19 @@ async function unifiedHandler(req: any): Promise<Response> {
         }
 
         if (method === "POST") {
-          const body = req.body || (typeof req.json === 'function' ? await req.json() : {});
+          const body = await getBody(req);
           const { data, error } = await supabase.from('blog_posts').insert([{
-            title: body.title, slug: body.slug, excerpt: body.excerpt, body: body.body,
-            category: body.category, cover_image: body.coverImage || body.cover_image,
-            author: body.author, read_time: parseInt(body.readTime || "5"),
-            tags: body.tags, featured: !!body.featured, published_at: new Date().toISOString()
+            title: body.title,
+            slug: body.slug,
+            excerpt: body.excerpt,
+            body: body.body,
+            category: body.category,
+            cover_image: body.coverImage || body.cover_image,
+            author: body.author,
+            read_time: parseInt((body.readTime || body.read_time || "5").toString()),
+            tags: body.tags,
+            featured: body.featured === true || body.featured === 'true',
+            published_at: new Date().toISOString()
           }]).select().single();
           if (error) throw error;
           return new Response(JSON.stringify(mapPost(data)), { status: 200, headers });
@@ -139,15 +148,44 @@ async function unifiedHandler(req: any): Promise<Response> {
         }
 
         if (id && method === "PUT") {
-          const body = req.body || (typeof req.json === 'function' ? await req.json() : {});
-          const { data, error } = await supabase.from('blog_posts').update({
-            title: body.title, slug: body.slug, excerpt: body.excerpt, body: body.body,
-            category: body.category, cover_image: body.coverImage || body.cover_image,
-            author: body.author, read_time: parseInt(body.readTime || "5"),
-            tags: body.tags, featured: !!body.featured
-          }).eq('id', id).select().single();
-          if (error) throw error;
-          return new Response(JSON.stringify(mapPost(data)), { status: 200, headers });
+          const body = await getBody(req);
+          console.log(`DEBUG: Updating Blog ID: [${id}]`);
+          
+          const updateData: any = {};
+          if (body.title !== undefined) updateData.title = body.title;
+          if (body.slug !== undefined) updateData.slug = body.slug;
+          if (body.excerpt !== undefined) updateData.excerpt = body.excerpt;
+          if (body.body !== undefined) updateData.body = body.body;
+          if (body.category !== undefined) updateData.category = body.category;
+          if (body.author !== undefined) updateData.author = body.author;
+          
+          const coverImg = body.coverImage || body.cover_image;
+          if (coverImg !== undefined) updateData.cover_image = coverImg;
+          
+          const rdTime = body.readTime || body.read_time;
+          if (rdTime !== undefined) updateData.read_time = parseInt(rdTime.toString());
+          
+          if (body.tags !== undefined) updateData.tags = body.tags;
+          
+          if (body.featured !== undefined) {
+             updateData.featured = body.featured === true || body.featured === 'true';
+          }
+
+          console.log("DEBUG: Update Payload:", JSON.stringify(updateData));
+
+          const { data, error } = await supabase.from('blog_posts').update(updateData).eq('id', id).select();
+          
+          if (error) {
+            console.error("Update Error:", error);
+            throw error;
+          }
+
+          if (!data || data.length === 0) {
+            console.warn(`Update failed: No rows matched ID ${id}`);
+            return new Response(JSON.stringify({ error: "Post not found" }), { status: 404, headers });
+          }
+
+          return new Response(JSON.stringify(mapPost(data[0])), { status: 200, headers });
         }
 
         if (id && method === "DELETE") {
