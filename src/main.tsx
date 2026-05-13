@@ -10,6 +10,7 @@ import ServiceDetails from "./pages/service-details";
 import ContactPage from "./pages/contact";
 import BlogDetailPage from "./pages/blog-details";
 import BlogPage from "./pages/blog-listing";
+import BookConsultation from "./pages/book-consultation";
 import NotFound from "./pages/404";
 import LoginPage from "./pages/admin/login";
 import AdminDashboard from "./pages/admin/dashboard";
@@ -57,6 +58,7 @@ function App() {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/blog/:slug" element={<BlogDetailPage />} />
+            <Route path="/book-consultation" element={<BookConsultation />} />
           </Route>
           
           <Route path="/admin" element={<LoginPage />} />

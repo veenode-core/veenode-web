@@ -1,17 +1,18 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import {
-  ArrowRight,
   EnvelopeSimple,
   MapPin,
   LinkedinLogo,
   TwitterLogo,
   GithubLogo,
+  CircleNotch,
 } from "@phosphor-icons/react";
 import Field from "../components/ui/field";
 import Button from "../components/ui/button";
 import { useForm, ValidationError } from "@formspree/react";
+import { useNavigate } from "react-router-dom";
 
 const enquiryTypes = [
   "AI Engineering",
@@ -51,6 +52,16 @@ export default function ContactPage() {
 
   const [selected, setSelected] = useState<string[]>([]);
   const [state, handleSubmit] = useForm("mdapvldb");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (state.succeeded) {
+      const timer = setTimeout(() => {
+        navigate("/book-consultation");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [state.succeeded, navigate]);
 
   useGSAP(
     () => {
@@ -229,28 +240,22 @@ export default function ContactPage() {
           <div ref={formRef} className="lg:col-span-8 bg-white p-10 md:p-14">
             {state.succeeded ? (
               <div className="h-full flex flex-col items-start justify-center gap-6 py-20">
-                <div
-                  className="w-12 h-12 rounded-full flex items-center justify-center"
-                  style={{ background: "rgba(15,31,69,0.06)" }}
-                >
-                  <ArrowRight
-                    size={20}
-                    weight="bold"
-                    className="text-primary"
-                  />
-                </div>
+                <CircleNotch
+                  size={48}
+                  weight="bold"
+                  className="text-[#F0A500] animate-spin mb-2"
+                />
                 <h2
                   className="font-bold text-[#0f1f45] leading-tight"
                   style={{ fontSize: "clamp(1.75rem, 4vw, 3rem)" }}
                 >
-                  Message received.
+                  Thanks! But before you go, let's find a time to chat.
                 </h2>
                 <p
-                  className="text-sm leading-relaxed max-w-sm"
-                  style={{ color: "rgba(15,31,69,0.5)" }}
+                  className="text-sm leading-relaxed max-w-sm flex items-center gap-2"
+                  style={{ color: "rgba(15,31,69,0.7)" }}
                 >
-                  Thank you for reaching out. A member of our team will be in
-                  touch within one business day.
+                  Booking a free consultation for you...
                 </p>
                 <div
                   className="w-8 h-px mt-2"
