@@ -58,7 +58,7 @@ export default function HeroSection() {
             variant="secondary"
             icon={<ChatCircle size={20} />}
           >
-            Talk to Us
+            Book your free consultation call
           </Button>
         </div>
 
