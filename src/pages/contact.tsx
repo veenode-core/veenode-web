@@ -28,13 +28,13 @@ const contactDetails = [
   {
     icon: EnvelopeSimple,
     label: "Email",
-    value: "hello@veenode.com",
-    href: "mailto:hello@veenode.com",
+    value: "hello@veenode.org",
+    href: "mailto:hello@veenode.org",
   },
   {
     icon: MapPin,
     label: "Headquarters",
-    value: "Lagos, Nigeria",
+    value: "Montreal, Canada",
     href: null,
   },
 ];
