@@ -234,7 +234,7 @@ export default function ContactPage() {
                 style={{ color: "rgba(255,255,255,0.35)" }}
               >
                 We typically respond within one business day. For urgent
-                matters, please mention it in your message.
+                matters, please mention it in your message...
               </p>
             </div>
 
