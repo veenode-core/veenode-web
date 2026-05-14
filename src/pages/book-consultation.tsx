@@ -1,7 +1,33 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { CircleNotch } from "@phosphor-icons/react";
 
 export default function BookConsultation() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [calendlyUrl, setCalendlyUrl] = useState("https://calendly.com/consultation-veenode/30min");
+
   useEffect(() => {
+    const name = sessionStorage.getItem("veenode_name");
+    const email = sessionStorage.getItem("veenode_email");
+    
+    let url = "https://calendly.com/consultation-veenode/30min";
+    const params = new URLSearchParams();
+    if (name) params.append("name", name);
+    if (email) params.append("email", email);
+    
+    if (params.toString()) {
+      url += `?${params.toString()}`;
+    }
+    setCalendlyUrl(url);
+
+    // Listen to Calendly events to hide spinner when widget is ready
+    const handleMessage = (e: MessageEvent) => {
+      if (e.data && e.data.event && e.data.event.startsWith('calendly.')) {
+        // Any calendly event signifies the iframe is loaded and interacting
+        setIsLoading(false);
+      }
+    };
+    window.addEventListener("message", handleMessage);
+
     const existingScript = document.getElementById("calendly-script");
     if (!existingScript) {
       const script = document.createElement("script");
@@ -10,6 +36,10 @@ export default function BookConsultation() {
       script.async = true;
       document.body.appendChild(script);
     }
+
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
   }, []);
 
   return (
@@ -47,10 +77,19 @@ export default function BookConsultation() {
         </div>
 
         {/* Calendly Inline Widget */}
-        <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
+        <div 
+          className="bg-white rounded-2xl border border-gray-100 overflow-hidden relative" 
+          style={{ minHeight: "700px" }}
+        >
+          {isLoading && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-white z-0 transition-opacity duration-500">
+              <CircleNotch size={40} className="animate-spin text-[#F0A500] mb-4" />
+              <p className="text-sm font-medium text-[#0f1f45] opacity-70">Loading calendar...</p>
+            </div>
+          )}
           <div
-            className="calendly-inline-widget w-full"
-            data-url="https://calendly.com/consultation-veenode/30min"
+            className="calendly-inline-widget w-full relative z-10"
+            data-url={calendlyUrl}
             style={{ minWidth: "320px", height: "700px" }}
           />
         </div>

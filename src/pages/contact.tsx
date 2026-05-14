@@ -13,6 +13,7 @@ import Field from "../components/ui/field";
 import Button from "../components/ui/button";
 import { useForm, ValidationError } from "@formspree/react";
 import { useNavigate } from "react-router-dom";
+import { sanitizeInput } from "../utils/sanitize";
 
 const enquiryTypes = [
   "AI Engineering",
@@ -53,6 +54,28 @@ export default function ContactPage() {
   const [selected, setSelected] = useState<string[]>([]);
   const [state, handleSubmit] = useForm("mdapvldb");
   const navigate = useNavigate();
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    
+    // Sanitize all inputs before Formspree processes them
+    const inputs = form.querySelectorAll("input, textarea");
+    inputs.forEach((input) => {
+      if ((input as HTMLInputElement).value) {
+        (input as HTMLInputElement).value = sanitizeInput((input as HTMLInputElement).value);
+      }
+    });
+
+    const formData = new FormData(form);
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+    
+    if (name) sessionStorage.setItem("veenode_name", name);
+    if (email) sessionStorage.setItem("veenode_email", email);
+    
+    handleSubmit(e);
+  };
 
   useEffect(() => {
     if (state.succeeded) {
@@ -263,7 +286,7 @@ export default function ContactPage() {
                 />
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="flex flex-col gap-10">
+              <form onSubmit={handleFormSubmit} className="flex flex-col gap-10">
                 {/* Hidden field for Formspree to capture selected enquiry type */}
                 <input type="hidden" name="enquiry_type" value={selected.join(", ")} />
                 {/* Enquiry type */}
